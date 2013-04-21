@@ -1,9 +1,5 @@
 <?php
 
-
-
-
-
 $doc = \Foomo\HTMLDocument::getInstance()
 	->addJavascripts(array(
 		Foomo\JS::create(Foomo\Backbone\Module::getHtdocsDir('js') . DIRECTORY_SEPARATOR . 'bootstrap.js')

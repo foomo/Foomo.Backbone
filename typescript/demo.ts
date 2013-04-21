@@ -18,19 +18,19 @@ class TagEditorFactory {
 
 class TagEditor extends Components.BaseComponent {
 	private components: {
-		inputTag?:Components.TextInput;
+		inputTag?:Components.Input;
 	};
 	constructor(options?:{}) {
 		super(options);
 	}
 	private init() {
-		this.components = Components.populateView(this,[
-			Components.TextInput.map('.control')
+		this.components = Components.mapToView(this,[
+			Components.Input.map('.control')
 		]);
-		this.components.inputTag.on('change', (value) => {
+		this.components.inputTag.on('change', (input:Components.Input) => {
 			var newTags = _.clone(this.model.get(this.prop));
-			newTags.push(value)
-			this.components.inputTag.val('');
+			newTags.push(input.getValue());
+			this.components.inputTag.setValue('');
 			this.model.set(this.prop, newTags);
 		}, this);
 	}
@@ -54,19 +54,18 @@ class TagEditor extends Components.BaseComponent {
 		return comp;
 	}
 
-	public val(value?:any):any {
-		if(typeof value == 'undefined') {
-			return this.view.model.get(this.prop);
-		} else {
-			var tagsEl = this.$('ul.tags')
-				.empty()
-			;
-			_.each(value, (tag:string) => {
-				tagsEl.append($('<li></li>').text(tag));
-			});
-		}
+	public getValue():string[]
+	{
+		return this.view.model.get(this.prop);
 	}
-
+	public setValue(value:string[]) {
+		var tagsEl = this.$('ul.tags')
+			.empty()
+		;
+		_.each(value, (tag:string) => {
+			tagsEl.append($('<li></li>').text(tag));
+		});
+	}
 	public static map(selector, prop) {
 		return new Components.Mapping(
 			selector,
@@ -90,10 +89,16 @@ class DemoModel extends Backbone.Model {
 		this.feedback = new Components.FeedbackModel;
 		this.on('change', () => {
 			if(this.attributes.foo == 'bar') {
-				this.feedback.giveFormFeedback(
+				this.feedback.giveFeedback(
 					'foo',
 					'no bar !',
 					Components.Feedback.LEVEL_ERROR
+				)
+			} else {
+				this.feedback.giveFeedback(
+					'foo',
+					'ok',
+					Components.Feedback.LEVEL_OK
 				)
 			}
 		});
@@ -102,6 +107,11 @@ class DemoModel extends Backbone.Model {
 		return {
 			foo: "Hello Foo",
 			bar: "Hello Bar",
+			booBool: true,
+			superBool: {
+				value: "Hello",
+				checked: true
+			},
 			years: [
 				{
 					value: 1991,
@@ -125,33 +135,41 @@ class DemoView extends Backbone.View {
 	static robert = new Backbone.Model;
 	model:DemoModel;
 	public components: {
-		inputFoo?:Components.TextInput;
-		inputBar?:Components.TextInput;
-		inputBoo?:Components.TextInput;
+		inputFoo?:Components.Input;
+		inputBar?:Components.Input;
+		inputBoo?:Components.Input;
 		inputSelectYear?: Components.Select;
 		inputSelectMonth?: Components.Select;
 		inputSelectDay?: Components.Select;
 		tagEditor?: TagEditor;
+		checkBooBool?: Components.Checkbox;
+		displaySuperBool?:Components.Display;
 	};
 	constructor(el) {
 		super({});
 		this.setElement(el);
 		this.$el.html(window['DemoViewTemplate']({}));
 		this.model = new DemoModel();
-		this.components = Components.populateView(this,[
-			Components.TextInput.map('.control')
+		this.components = Components.mapToView(this,[
+			Components.Input.map('.control')
 				.addBehaviour(Components.ComponentFeedback.getFactory(this.model.feedback))
 			,
 			Components.Select.mapWithOptionsFrom('#inputSelectYear', this.model, 'years'),
 			TagEditor.map('#tagEditor', 'tags'),
 			TagEditor.map('#twoTag', 'moreTags'),
-			Components.Display.map('.current')
+			Components.Display.map('.current-text'),
+			Components.Display.mapWithFilter('.current-bool', (data:any) => {
+				if(data && data.value) {
+					return data.value + (data.checked?' is checked':' is not checked');
+				} else {
+					return '';
+				}
+			})
 		]);
 		this.components.inputBoo
 			.when('change:foo', this.model)//DemoView.robert)
 			.then((model, component) => {
 				if(model.get('foo') == 'hello') {
-					// component.element.hide();
 					this.$('div').css({border: '1px red solid'});
 				} else {
 					this.$('div').css({border: 'none'});

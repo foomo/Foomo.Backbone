@@ -1,34 +1,40 @@
 <div>
     <div id="inputFoo" class="control">
         foo
-        <input name="foo">
-        <span class="current" data-model-prop="foo">current value</span>
-        <span class="form-feedback"></span>
+        <input name="foo" type="text">
+        <span class="current-text" data-model-attr="foo">current value</span>
+        <span class="feedback"></span>
     </div>
 
     <div id="inputBar" class="control">
         bar
-        <input name="bar">
-        <span class="form-feedback"></span>
+        <input name="bar" type="text">
+        <span class="current-text" data-model-attr="bar">current value</span>
+        <span class="feedback"></span>
     </div>
 
     <div id="inputBoo" class="control">
         boo
-        <input name="boo">
-        <span class="current" data-prop="boo">current value</span>
-        <span class="form-feedback"></span>
+        <input name="boo" type="text">
+        <span class="current-text" data-model-attr="boo">current value</span>
+        <span class="feedback"></span>
+    </div>
+    <div id="checkBooBool" class="control">
+        booBol
+        <input type="checkbox" name="superBool">
+        <span id="displaySuperBool" class="current-bool" data-model-attr="superBool">... boo bol goes here</span>
     </div>
 
     <div id="inputSelectYear" class="control">
         year
         <select name="year"></select>
-        <span class="form-feedback"></span>
+        <span class="feedback"></span>
     </div>
 
     <div id="inputSelectMonth" class="control">
         month
         <select name="month"></select>
-        <span class="form-feedback"></span>
+        <span class="feedback"></span>
     </div>
 
 
@@ -36,18 +42,18 @@
         <div id="inputSelectDay" class="control">
             day
             <select name="day"></select>
-            <span class="form-feedback"></span>
+            <span class="feedback"></span>
         </div>
 
         <div id="tagEditor" class="control">
         </div>
         <hr>
         <div id="twoTag" class="tagEditor">
-            <div class="form-feedback"></div>
+            <div class="feedback"></div>
             <div id="inputTag" class="control">
                 <ul class="tags"></ul>
                 <input type="text">
-                <label>my cursom crap</label>
+                <label>my custom crap</label>
             </div>
         </div>
     </div>
