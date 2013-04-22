@@ -224,7 +224,7 @@ declare module Backbone {
 		events: any;
 
 		el: HTMLElement;
-		$el;
+		$el: any;
 		setElement(element);
 		attributes;
 		$(selector);

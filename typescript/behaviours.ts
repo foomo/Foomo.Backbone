@@ -60,10 +60,10 @@ module Backbone.Components.Behaviours {
 		constructor(
 			public component:BaseComponent,
 			public feedbackModel:FeedbackModel
-			) {
+		) {
 			super(component);
-			if(this.component.prop) {
-				this.feedbackModel.on('change:' + this.component.prop, this.loadFeedback, this);
+			if(this.component.attribute) {
+				this.feedbackModel.on('change:' + this.component.attribute, this.loadFeedback, this);
 			} else {
 				console.log(component);
 				throw new Error('the given component has no prop - i can not give any feedback to it');
@@ -80,7 +80,7 @@ module Backbone.Components.Behaviours {
 			};
 		}
 		private loadFeedback() {
-			var feedback = this.feedbackModel.getFeedback(this.component.prop);
+			var feedback = this.feedbackModel.getFeedback(this.component.attribute);
 			if(typeof feedback == "object") {
 				this.component.$('.' + ComponentFeedback.FEEBACK_CLASS)
 					.text(feedback.message)
@@ -88,6 +88,25 @@ module Backbone.Components.Behaviours {
 					.addClass(feedback.level)
 				;
 			}
+		}
+	}
+
+	export class ListItemEventHandler extends Backbone.Components.Behaviour {
+		public component:List;
+		constructor(component:List, event:string, callback:(data:any) => void) {
+			super(component);
+			var listItemListener:ListItemListener = new ListItemListener(
+				event,
+				callback,
+				this.component
+			);
+			this.component.addListener(listItemListener);
+		}
+
+		public static getFactory(event:string, callback:(data:any) => void) {
+			return (component:List) => {
+				return new ListItemEventHandler(component, event, callback);
+			};
 		}
 	}
 

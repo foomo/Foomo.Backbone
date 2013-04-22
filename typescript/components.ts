@@ -10,8 +10,8 @@ module Backbone.Components {
 					if(comp.id) {
 						comps[comp.id] = comp;
 					}
-					if(comp.prop) {
-						comp.bindModel(view.model, comp.prop);
+					if(comp.attribute) {
+						comp.bindModel(view.model, comp.attribute);
 					}
 					_.each(mapping.eventBindings, function(eventBinding:Backbone.Components.EventBinding) {
 						comp.attachBinding(eventBinding);
@@ -77,7 +77,7 @@ module Backbone.Components {
 	export class BaseComponent extends Backbone.View {
 		public view:Backbone.View;
 		public id:string;
-		public prop:string;
+		public attribute:string;
 		public bidirectionalBinding:bool = true;
 
 		public behaviours:Behaviour[] = [];
@@ -168,8 +168,8 @@ module Backbone.Components {
 		 * @param value
 		 */
 		public handleChange(value) {
-			if(this.bidirectionalBinding && this.prop) {
-				this.view.model.set(this.prop, value);
+			if(this.bidirectionalBinding && this.attribute) {
+				this.view.model.set(this.attribute, value);
 			}
 			this.trigger('change', this);
 		}
@@ -198,7 +198,7 @@ module Backbone.Components {
 			if(myInput.length == 1) {
 				comp = new Display();
 				comp.id = element.prop('id');
-				comp.prop = element.attr('data-model-attr');
+				comp.attribute = element.attr('data-model-attr');
 				comp.view = view;
 				comp.setElement(element);
 				if(filter) {
@@ -231,21 +231,68 @@ module Backbone.Components {
 			);
 		}
 	}
+	export class ListItemListener {
+		constructor(
+			public event:string,
+			public handler: (item:Backbone.View, event:any) => void,
+			public context:any
+		) {
 
-	/*
-	 export class List extends BaseComponent {
-	 public static factory(element:JQuery, view:Backbone.View):List {
+		}
+	}
+	export class List extends BaseComponent {
+		private element:JQuery;
+		private viewClass:any;
+		private itemListeners:ListItemListener[] = [];
+		public static factory(element:JQuery, view:Backbone.View, viewClass:any, attribute:string = ''):List {
+			var comp = new List();
+			comp.view = view;
+			comp.element = element;
+			console.log(attribute);
+			if(attribute.length > 0) {
+				comp.attribute = attribute;
+			} else {
+				comp.attribute = comp.element.data('data-model-attr');
+			}
+			comp.id = comp.element.prop('id');
+			comp.viewClass = viewClass;
+			return comp;
+		}
+		public static map(selector:string,viewClass:any, attribute:string = ''):Mapping {
+			return new Mapping(
+				selector,
+				(element:JQuery, view:Backbone.View):List => {
+					return List.factory(element, view, viewClass, attribute);
+				},
+				[]
+			);
+		}
+		public getValue() {
+			return this.view.model.get(this.attribute);
+		}
 
-	 }
-	 public static map(selectory, viewClass:any, ) {
+		public setValue(value:any[]) {
+			this.element.empty();
+			var that = this;
+			_.each(value, (item) => {
+				if(typeof item != 'object') {
+					item = {value: item};
+				}
+				var model = new that.viewClass.model(item);
+				var listItem = new that.viewClass({model:model});
+				that.element.append(listItem.$el);
+				_.each(that.itemListeners, (listener:ListItemListener) => {
+					listItem.on(listener.event, listener.handler, listener.context);
+				});
+			});
+		}
 
-	 }
-	 }
-	 */
-
-
-
-
-
-
+		/**
+		 * the listeners will be actually attached, the next time the items are rerendered
+		 * @param listener
+		 */
+		public addListener(listener:ListItemListener) {
+			this.itemListeners.push(listener);
+		}
+	}
 }

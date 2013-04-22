@@ -27,7 +27,7 @@ module Backbone.Components.Controls {
 						comp = new Input;
 				}
 				comp.element = myInput;
-				comp.prop = comp.element.prop('name');
+				comp.attribute = comp.element.prop('name');
 				comp.id = element.prop('id');
 				comp.view = view;
 				comp.setElement(element);
@@ -95,7 +95,7 @@ module Backbone.Components.Controls {
 			if(selectElement.length == 1) {
 				comp = new Select;
 				comp.element = selectElement;
-				comp.prop = comp.element.prop('name');
+				comp.attribute = comp.element.prop('name');
 				comp.id = element.prop('id');
 				comp.view = view;
 				comp.setElement(element);
