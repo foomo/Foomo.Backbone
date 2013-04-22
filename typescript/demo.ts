@@ -1,13 +1,17 @@
 ///<reference path='underscore.d.ts' />
 ///<reference path='backbone.d.ts' />
 ///<reference path='components.ts' />
+///<reference path='behaviours.ts' />
+///<reference path='controls.ts' />
 
-import Components = Foomo.Backbone.Components;
+import Comps = Backbone.Components;
+import Behavs = Backbone.Components.Behaviours;
+import Controls = Backbone.Components.Controls;
 
 class TagEditorFactory {
 	constructor(public prop:string) {
 	}
-	public factory(element:JQuery, view:_Backbone.View):TagEditor {
+	public factory(element:JQuery, view:Backbone.View):TagEditor {
 		var tagEditor:TagEditor = TagEditor.factory(element, view);
 		if(tagEditor) {
 			tagEditor.prop = this.prop;
@@ -16,21 +20,21 @@ class TagEditorFactory {
 	}
 }
 
-class TagEditor extends Components.BaseComponent {
-	private components: {
-		inputTag?:Components.Input;
+class TagEditor extends Comps.BaseComponent {
+	private comps: {
+		inputTag?:Controls.Input;
 	};
 	constructor(options?:{}) {
 		super(options);
 	}
 	private init() {
-		this.components = Components.mapToView(this,[
-			Components.Input.map('.control')
+		this.comps = Comps.mapToView(this,[
+			Controls.Input.map('.control')
 		]);
-		this.components.inputTag.on('change', (input:Components.Input) => {
+		this.comps.inputTag.on('change', (input:Controls.Input) => {
 			var newTags = _.clone(this.model.get(this.prop));
 			newTags.push(input.getValue());
-			this.components.inputTag.setValue('');
+			this.comps.inputTag.setValue('');
 			this.model.set(this.prop, newTags);
 		}, this);
 	}
@@ -67,7 +71,7 @@ class TagEditor extends Components.BaseComponent {
 		});
 	}
 	public static map(selector, prop) {
-		return new Components.Mapping(
+		return new Comps.Mapping(
 			selector,
 			(element:JQuery, view:Backbone.View):TagEditor => {
 				var tagEditor:TagEditor = TagEditor.factory(element, view);
@@ -83,23 +87,23 @@ class TagEditor extends Components.BaseComponent {
 
 
 class DemoModel extends Backbone.Model {
-	public feedback:Components.FeedbackModel;
+	public feedback:Behavs.FeedbackModel;
 	constructor(options?) {
 		super(options);
-		this.feedback = new Components.FeedbackModel;
+		this.feedback = new Behavs.FeedbackModel;
 		this.on('change', () => {
 			if(this.attributes.foo == 'bar') {
 				this.feedback.giveFeedback(
 					'foo',
 					'no bar !',
-					Components.Feedback.LEVEL_ERROR
-				)
+					Behavs.Feedback.LEVEL_ERROR
+				);
 			} else {
 				this.feedback.giveFeedback(
 					'foo',
 					'ok',
-					Components.Feedback.LEVEL_OK
-				)
+					Behavs.Feedback.LEVEL_OK
+				);
 			}
 		});
 	}
@@ -108,10 +112,11 @@ class DemoModel extends Backbone.Model {
 			foo: "Hello Foo",
 			bar: "Hello Bar",
 			booBool: true,
-			superBool: {
+			superBool: false,
+		/*{
 				value: "Hello",
 				checked: true
-			},
+			},*/
 			years: [
 				{
 					value: 1991,
@@ -130,35 +135,40 @@ class DemoModel extends Backbone.Model {
 	}
 }
 
+
 class DemoView extends Backbone.View {
 
 	static robert = new Backbone.Model;
 	model:DemoModel;
-	public components: {
-		inputFoo?:Components.Input;
-		inputBar?:Components.Input;
-		inputBoo?:Components.Input;
-		inputSelectYear?: Components.Select;
-		inputSelectMonth?: Components.Select;
-		inputSelectDay?: Components.Select;
+	public Comps: {
+		inputFoo?:Controls.Input;
+		inputBar?:Controls.Input;
+		inputBoo?:Controls.Input;
+		inputSelectYear?: Controls.Select;
+		inputSelectMonth?: Controls.Select;
+		inputSelectDay?: Controls.Select;
 		tagEditor?: TagEditor;
-		checkBooBool?: Components.Checkbox;
-		displaySuperBool?:Components.Display;
+		checkBooBool?: Controls.Checkbox;
+		displaySuperBool?:Comps.Display;
 	};
 	constructor(el) {
 		super({});
 		this.setElement(el);
 		this.$el.html(window['DemoViewTemplate']({}));
 		this.model = new DemoModel();
-		this.components = Components.mapToView(this,[
-			Components.Input.map('.control')
-				.addBehaviour(Components.ComponentFeedback.getFactory(this.model.feedback))
+		this.Comps = Comps.mapToView(this,[
+			Controls.Input.map('.control')
+				.addBehaviour(Behavs.ComponentFeedback.getFactory(this.model.feedback))
+				.addBehaviour(Controls.Behaviours.TypeToChange.factory)
 			,
-			Components.Select.mapWithOptionsFrom('#inputSelectYear', this.model, 'years'),
+			Controls.Select.mapWithOptionsFrom('#inputSelectYear', this.model, 'years'),
 			TagEditor.map('#tagEditor', 'tags'),
 			TagEditor.map('#twoTag', 'moreTags'),
-			Components.Display.map('.current-text'),
-			Components.Display.mapWithFilter('.current-bool', (data:any) => {
+			Comps.Display.map('.current-text'),
+			Comps.Display.mapWithFilter('.current-bool', (data:any) => {
+				if(typeof data == 'boolean') {
+					return data?'yes':'no';
+				}
 				if(data && data.value) {
 					return data.value + (data.checked?' is checked':' is not checked');
 				} else {
@@ -166,7 +176,7 @@ class DemoView extends Backbone.View {
 				}
 			})
 		]);
-		this.components.inputBoo
+		this.Comps.inputBoo
 			.when('change:foo', this.model)//DemoView.robert)
 			.then((model, component) => {
 				if(model.get('foo') == 'hello') {

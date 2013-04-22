@@ -1,14 +1,9 @@
 
+module Backbone.Components {
 
-
-import _Backbone = Backbone;
-
-module Foomo.Backbone.Components {
-
-	export var mapToView = (view:_Backbone.View, mappings:Mapping[]) => {
+	export var mapToView = (view:Backbone.View, mappings:Mapping[]) => {
 		var comps = {};
 		_.each(mappings, (mapping:Mapping) => {
-
 			view.$(mapping.selector).each((index, candidateEl) => {
 				var comp:BaseComponent = mapping.factory($(candidateEl), view);
 				if(typeof comp == 'object') {
@@ -18,7 +13,7 @@ module Foomo.Backbone.Components {
 					if(comp.prop) {
 						comp.bindModel(view.model, comp.prop);
 					}
-					_.each(mapping.eventBindings, function(eventBinding:Foomo.Backbone.Components.EventBinding) {
+					_.each(mapping.eventBindings, function(eventBinding:Backbone.Components.EventBinding) {
 						comp.attachBinding(eventBinding);
 					});
 					_.each(mapping.behaviours, function(behaviourFactory:(component:BaseComponent) => Behaviour) {
@@ -30,64 +25,14 @@ module Foomo.Backbone.Components {
 		return comps;
 	};
 
-
-	/**
-	 * give feedback to the state of a model, so that it can be rendered in the view
-	 */
-	export class Feedback {
-		static LEVEL_NONE = 'feedback-none';
-		static LEVEL_OK = 'feedback-ok';
-		static LEVEL_INFO = 'feedback-info';
-		static LEVEL_WARNING = 'feedback-warning';
-		static LEVEL_ERROR = 'feedback-error';
-
-		constructor(
-			public message:string = '',
-			public level:string = ''
-		) {
-
-		}
-		public static getAllLevels() {
-			return [
-				Feedback.LEVEL_NONE,
-				Feedback.LEVEL_OK,
-				Feedback.LEVEL_INFO,
-				Feedback.LEVEL_WARNING,
-				Feedback.LEVEL_ERROR
-			];
-		}
-	}
-
-	/**
-	 * a model, that holds feedback and can be bound in a view
-	 */
-	export class FeedbackModel extends _Backbone.Model {
-		constructor(
-			options:any = {}
-		) {
-			super(options);
-		}
-		public giveFeedback(
-			field:string,
-			message:string,
-			level:string = Feedback.LEVEL_NONE
-			) {
-			this.set(field, new Feedback(message, level));
-		}
-		public getFeedback(field:string):Feedback {
-			return this.get(field);
-		}
-	}
-
-
 	/**
 	 * define a binding for an event, that will be processed by a handler
 	 */
 	export class EventBinding {
 		constructor(
-			public model: _Backbone.Model,
+			public model: Backbone.Model,
 			public event: string,
-			public handler: (model:_Backbone.Model, component:BaseComponent) => void
+			public handler: (model:Backbone.Model, component:BaseComponent) => void
 		) {
 		}
 	}
@@ -99,8 +44,8 @@ module Foomo.Backbone.Components {
 	export class Mapping {
 		constructor(
 			public selector:string,
-			public factory: (element:JQuery, view:_Backbone.View) => BaseComponent,
-			public eventBindings:Foomo.Backbone.Components.EventBinding[],
+			public factory: (element:JQuery, view:Backbone.View) => BaseComponent,
+			public eventBindings:Backbone.Components.EventBinding[],
 			// dear typescript i want an array of closures
 			public behaviours:any[] = []
 		) {
@@ -110,7 +55,7 @@ module Foomo.Backbone.Components {
 		/**
 		 * add another behaviour / its factory
 		 * @param behaviourFactory
-		 * @returns {Foomo.Backbone.Components.Mapping}
+		 * @returns {Backbone.Components.Mapping}
 		 */
 		addBehaviour(behaviourFactory:(component:BaseComponent) => Behaviour) {
 			this.behaviours.push(behaviourFactory);
@@ -125,11 +70,12 @@ module Foomo.Backbone.Components {
 		constructor(public component:BaseComponent) {}
 	}
 
+
 	/**
 	 * the mother of all components
 	 */
-	export class BaseComponent extends _Backbone.View {
-		public view:_Backbone.View;
+	export class BaseComponent extends Backbone.View {
+		public view:Backbone.View;
 		public id:string;
 		public prop:string;
 		public bidirectionalBinding:bool = true;
@@ -138,7 +84,7 @@ module Foomo.Backbone.Components {
 
 		private whenData:{
 			event:string;
-			model:_Backbone.Model;
+			model:Backbone.Model;
 		};
 		/**
 		 * implement this in your component
@@ -159,9 +105,9 @@ module Foomo.Backbone.Components {
 		 * start an event binding | or many
 		 * @param event
 		 * @param model
-		 * @returns {Foomo.Backbone.Components.BaseComponent}
+		 * @returns {Backbone.Components.BaseComponent}
 		 */
-		public when(event:string, model?:_Backbone.Model) {
+		public when(event:string, model?:Backbone.Model) {
 			if(typeof model == 'undefined') {
 				model = this.view.model;
 			}
@@ -175,12 +121,12 @@ module Foomo.Backbone.Components {
 		/**
 		 * add a handler to the started event binding - you can do this multiple times
 		 * @param handler
-		 * @returns {Foomo.Backbone.Components.BaseComponent}
+		 * @returns {Backbone.Components.BaseComponent}
 		 */
-		public then(handler:(model:_Backbone.Model, component:BaseComponent) => void) {
+		public then(handler:(model:Backbone.Model, component:BaseComponent) => void) {
 			if(typeof this.whenData == 'object' && typeof this.whenData.event == 'string' && typeof this.whenData.model == 'object') {
 				this.attachBinding(
-					new Foomo.Backbone.Components.EventBinding(
+					new Backbone.Components.EventBinding(
 						this.whenData.model,
 						this.whenData.event,
 						handler
@@ -195,9 +141,9 @@ module Foomo.Backbone.Components {
 		/**
 		 * direct / less readable way to attach an event binding
 		 * @param binding
-		 * @returns {Foomo.Backbone.Components.BaseComponent}
+		 * @returns {Backbone.Components.BaseComponent}
 		 */
-		public attachBinding(binding:Foomo.Backbone.Components.EventBinding) {
+		public attachBinding(binding:Backbone.Components.EventBinding) {
 			binding.model.on(binding.event, (model) => {
 				binding.handler(binding.model, this);
 			});
@@ -209,7 +155,7 @@ module Foomo.Backbone.Components {
 		 * @param model
 		 * @param attribute
 		 */
-		public bindModel(model:_Backbone.Model, attribute:string)
+		public bindModel(model:Backbone.Model, attribute:string)
 		{
 			model.on('change:' + attribute, (model) => {
 				this.setValue(model.get(attribute));
@@ -246,7 +192,7 @@ module Foomo.Backbone.Components {
 	 */
 	export class Display extends BaseComponent {
 		public filter = (value:any) => { return '' + value };
-		public static factory(element:JQuery, view:_Backbone.View, filter?: (value:any) => string):Display {
+		public static factory(element:JQuery, view:Backbone.View, filter?: (value:any) => string):Display {
 			var comp:Display;
 			var myInput = element;
 			if(myInput.length == 1) {
@@ -278,7 +224,7 @@ module Foomo.Backbone.Components {
 		{
 			return new Mapping(
 				selector,
-				(element:JQuery, view:_Backbone.View):Display => {
+				(element:JQuery, view:Backbone.View):Display => {
 					return Display.factory(element, view, filter);
 				},
 				[]
@@ -286,200 +232,20 @@ module Foomo.Backbone.Components {
 		}
 	}
 
-	/**
-	 * a behaviour that lets you render feedback to your UI
+	/*
+	 export class List extends BaseComponent {
+	 public static factory(element:JQuery, view:Backbone.View):List {
+
+	 }
+	 public static map(selectory, viewClass:any, ) {
+
+	 }
+	 }
 	 */
-	export class ComponentFeedback extends Behaviour {
-		public static FEEBACK_CLASS = 'feedback';
-		constructor(
-			public component:BaseComponent,
-			public feedbackModel:FeedbackModel
-		) {
-			super(component);
-			if(this.component.prop) {
-				this.feedbackModel.on('change:' + this.component.prop, this.loadFeedback, this);
-			} else {
-				console.log(component);
-				throw new Error('the given component has no prop - i can not give any feedback to it');
-			}
-		}
-		public static getFactory(feedbackModel:FeedbackModel) {
-			return (component:BaseComponent) => {
-				try {
-					var behaviour = new ComponentFeedback(component, feedbackModel);
-					return behaviour;
-				} catch(error) {
-					console.log('skipping this one');
-				}
-			};
-		}
-		private loadFeedback() {
-			var feedback = this.feedbackModel.getFeedback(this.component.prop);
-			if(typeof feedback == "object") {
-				this.component.$('.' + ComponentFeedback.FEEBACK_CLASS)
-					.text(feedback.message)
-					.removeClass(Feedback.getAllLevels().join(" "))
-					.addClass(feedback.level)
-				;
-			}
-		}
-	}
-
-	/**
-	 * a simple input
-	 */
-	export class Input extends BaseComponent {
-		public element:JQuery;
-		public static factory(element:JQuery, view:_Backbone.View):Input {
-			var comp:Input;
-			var myInput;
-			if(element.prop('tagName') == 'INPUT') {
-				myInput = element;
-			} else {
-				myInput = element.find('input');
-			}
-			if(myInput.length == 1) {
-				switch(myInput.prop('type')) {
-					case 'checkbox':
-						comp = new Checkbox();
-						break;
-					default:
-						comp = new Input;
-				}
-				comp.element = myInput;
-				comp.prop = comp.element.prop('name');
-				comp.id = element.prop('id');
-				comp.view = view;
-				comp.setElement(element);
-				comp.element.on('change', (event:JQueryEventObject) => {
-					comp.handleChange(comp.getValue());
-				});
-			}
-			return comp;
-		}
-		public static map(selector, bindings:Foomo.Backbone.Components.EventBinding[] = []) {
-			return new Mapping(
-				selector,
-				Input.factory,
-				bindings
-			);
-		}
-		public setValue(value:any)
-		{
-			this.element.val(value);
-		}
-		public getValue():any {
-			return this.element.val();
-		}
-	}
-
-	/**
-	 * a checkbox
-	 */
-	export class Checkbox extends Input {
-		public element:JQuery;
-		private value:any;
-		public setValue(value:any)
-		{
-			this.value = value;
-			if(typeof this.value == 'object') {
-				this.element.val(this.value.value);
-				this.element.prop('checked', this.value.checked);
-			} else {
-				this.element.prop('checked', this.value);
-			}
-		}
-		public getValue():any {
-			if(typeof this.value == 'object') {
-				this.value = {
-					value: this.element.val(),
-					checked: this.element.prop('checked')
-				}
-			} else {
-				this.value = this.element.prop('checked');
-			}
-			return this.value;
-		}
-	}
 
 
-	/**
-	 * a dropdown
-	 */
-	export class Select extends BaseComponent {
-		public element:JQuery;
-		public options:any = {};
-		public static factory(element:JQuery, view:_Backbone.View):Select {
-			var comp:Select;
-			var selectElement = element.find('select');
-			if(selectElement.length == 1) {
-				comp = new Select;
-				comp.element = selectElement;
-				comp.prop = comp.element.prop('name');
-				comp.id = element.prop('id');
-				comp.view = view;
-				comp.setElement(element);
-				comp.element.on('change', () => {
-					comp.handleChange(comp.getValue());
-				});
-			}
-			return comp;
-		}
-		private static loadOptions(model:_Backbone.Model, component:Components.Select, optionsAttribute:string)
-		{
-			component.element.find('option').remove();
-			_.each(model.get(optionsAttribute), (option) => {
-				component.element.append(
-					$('<option></option>')
-						.val(option.value)
-						.text(option.label)
-				);
-			});
-		}
 
-		/**
-		 * use this one, if your dropdown has fixed values
-		 * @param selector
-		 * @param bindings
-		 * @returns {Foomo.Backbone.Components.Mapping}
-		 */
-		public static map(selector, bindings:Foomo.Backbone.Components.EventBinding[] = []) {
-			return new Mapping(
-				selector,
-				Select.factory,
-				bindings
-			);
-		}
 
-		/**
-		 * use this one, if the contents of your dropdown are to be bound to a model
-		 * @param selector
-		 * @param optionsModel
-		 * @param optionsAttribute
-		 * @returns {Foomo.Backbone.Components.Mapping}
-		 */
-		public static mapWithOptionsFrom(selector:string, optionsModel:_Backbone.Model, optionsAttribute:string) {
-			return new Mapping(
-				selector,
-				Select.factory,
-				[
-					new Foomo.Backbone.Components.EventBinding(
-						optionsModel,
-						'change:' + optionsAttribute,
-						(model:_Backbone.Model, component:Select) => {
-							Select.loadOptions(model, component, optionsAttribute)
-						}
-					)
-				]
-			);
-		}
-		public setValue(value:any)
-		{
-			this.element.val(value);
-		}
-		public getValue():any
-		{
-			return this.element.val();
-		}
-	}
+
+
 }
