@@ -15,7 +15,7 @@ module Backbone.Components.Behaviours {
 		constructor(
 			public message:string = '',
 			public level:string = ''
-			) {
+		) {
 
 		}
 		public static getAllLevels() {
@@ -29,6 +29,69 @@ module Backbone.Components.Behaviours {
 		}
 	}
 
+	export module Validation {
+		interface IValidatorFactory {
+			() : BaseValidator;
+		}
+		export class Result {
+			constructor(
+				public valid:bool = true,
+				public message:string = '',
+				public level:string = Feedback.LEVEL_OK
+			) {
+
+			}
+		}
+
+		export class BaseValidator {
+			public validate(model:Backbone.Model, attribute:string):Result {
+				return new Result(false, 'implement me', Feedback.LEVEL_ERROR);
+			}
+		}
+		export var pack = function(factory:IValidatorFactory, ...attributes:string[]) {
+			return Package.make.apply(null, arguments);
+		}
+		export class Package {
+			constructor(
+				public attributes:string[],
+				public validatorFactory:IValidatorFactory
+			) {}
+			public static make(factory:IValidatorFactory, ...attributes:string[]) {
+				return new Package(attributes, factory);
+			}
+		}
+		export class Validator {
+			constructor(
+				public model:Backbone.Model,
+				public feedbackModel:FeedbackModel
+			) {
+
+			}
+			public static create(model:Backbone.Model, feedbackModel:FeedbackModel) {
+				return new Validator(model, feedbackModel);
+			}
+			public chain(...packages:Package[]):bool {
+				var ret = true;
+				var feedbackAttributes = {};
+				_.each(packages, (package:Package) => {
+					var validator = package.validatorFactory();
+					_.each(package.attributes, (attribute:string) => {
+						var result:Result = validator.validate(this.model, attribute);
+						if(!result.valid) {
+							ret = false;
+						}
+						if(typeof feedbackAttributes[attribute] == 'undefined') {
+							feedbackAttributes[attribute] = [];
+						}
+						feedbackAttributes[attribute].push(new Feedback(result.message, result.level));
+					});
+				});
+				this.feedbackModel.set(feedbackAttributes);
+				return ret;
+			}
+		}
+	}
+
 
 	/**
 	 * a model, that holds feedback and can be bound in a view
@@ -39,14 +102,22 @@ module Backbone.Components.Behaviours {
 			) {
 			super(options);
 		}
-		public giveFeedback(
+		public clearFeedback(attribute:string) {
+			this.set(attribute, []);
+		}
+		public addFeedback(
 			field:string,
 			message:string,
 			level:string = Feedback.LEVEL_NONE
-			) {
-			this.set(field, new Feedback(message, level));
+		) {
+			var feedback = _.clone(this.get(field));
+			if(!feedback) {
+				feedback = [];
+			}
+			feedback.push(new Feedback(message, level));
+			this.set(field, feedback);
 		}
-		public getFeedback(field:string):Feedback {
+		public getFeedback(field:string):Feedback[] {
 			return this.get(field);
 		}
 	}
@@ -56,16 +127,36 @@ module Backbone.Components.Behaviours {
 	 * a behaviour that lets you render feedback to your UI
 	 */
 	export class ComponentFeedback extends Backbone.Components.Behaviour {
-		public static FEEBACK_CLASS = 'feedback';
+		public static FEEDBACK_CLASS = 'feedback';
+		public static FEEDBACK_TEXT_CLASS = 'feedback-text';
+		private template:string;
+		private feedbackElement:JQuery;
 		constructor(
-			public component:BaseComponent,
+			public component:Backbone.Components.BaseComponent,
 			public feedbackModel:FeedbackModel
 		) {
 			super(component);
-			if(this.component.attribute) {
+			this.feedbackElement = this.component.$('.' + ComponentFeedback.FEEDBACK_CLASS);
+			if(this.component.attribute && this.feedbackElement) {
+				if(this.feedbackElement.children().length == 1) {
+					// we will be working with a template
+					var firstChild:JQuery = $(this.feedbackElement.children()[0]);
+					this.template = this.feedbackElement.html().trim();
+					this.feedbackElement.empty();
+				} else {
+					// we will be making elements ourselves
+					var tagName = 'div';
+					switch(this.feedbackElement.prop('tagName')) {
+						case 'UL':
+						case 'OL':
+							tagName = 'li';
+							break;
+					}
+					this.template = '<' + tagName + ' class="' + ComponentFeedback.FEEDBACK_TEXT_CLASS + '"></' + tagName + '>';
+
+				}
 				this.feedbackModel.on('change:' + this.component.attribute, this.loadFeedback, this);
 			} else {
-				console.log(component);
 				throw new Error('the given component has no prop - i can not give any feedback to it');
 			}
 		}
@@ -82,11 +173,19 @@ module Backbone.Components.Behaviours {
 		private loadFeedback() {
 			var feedback = this.feedbackModel.getFeedback(this.component.attribute);
 			if(typeof feedback == "object") {
-				this.component.$('.' + ComponentFeedback.FEEBACK_CLASS)
-					.text(feedback.message)
-					.removeClass(Feedback.getAllLevels().join(" "))
-					.addClass(feedback.level)
-				;
+				this.feedbackElement.empty();
+				_.each(feedback, (entry:Feedback) => {
+					var feedbackElement = $(this.template)
+						.removeClass(Feedback.getAllLevels().join(" "))
+						.addClass(entry.level)
+					;
+					if(feedbackElement.children().length == 0) {
+						feedbackElement.text(entry.message);
+					} else {
+						feedbackElement.find('.' + ComponentFeedback.FEEDBACK_TEXT_CLASS).text(entry.message);
+					}
+					this.feedbackElement.append(feedbackElement);
+				});
 			}
 		}
 	}
