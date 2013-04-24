@@ -276,9 +276,10 @@ module Backbone {
 			public setValue(value:any[]) {
 				this.element.empty();
 				var that = this;
+				var index = 0;
 				_.each(value, (item) => {
 					if(typeof item != 'object') {
-						item = {value: item};
+						item = {value: item, index: index};
 					}
 					var model = new that.viewClass.model(item);
 					var listItem = new that.viewClass({model:model});
@@ -286,6 +287,7 @@ module Backbone {
 					_.each(that.itemListeners, (listener:ListItemListener) => {
 						listItem.on(listener.event, listener.handler, listener.context);
 					});
+					index ++;
 				});
 			}
 

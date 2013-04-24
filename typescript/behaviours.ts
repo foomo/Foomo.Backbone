@@ -7,26 +7,33 @@ module Backbone.Components {
 		 * give feedback to the state of a model, so that it can be rendered in the view
 		 */
 		export class Feedback {
-			static LEVEL_NONE = 'feedback-none';
-			static LEVEL_OK = 'feedback-ok';
-			static LEVEL_INFO = 'feedback-info';
+			static LEVEL_NONE    = 'feedback-none';
+			static LEVEL_OK      = 'feedback-ok';
+			static LEVEL_INFO    = 'feedback-info';
 			static LEVEL_WARNING = 'feedback-warning';
-			static LEVEL_ERROR = 'feedback-error';
+			static LEVEL_ERROR   = 'feedback-error';
+
+			static ALL_LEVELS = [
+				Feedback.LEVEL_NONE,
+				Feedback.LEVEL_OK,
+				Feedback.LEVEL_INFO,
+				Feedback.LEVEL_WARNING,
+				Feedback.LEVEL_ERROR
+			];
+
+			static LEVEL_MAP = {
+				'feedback-none'    : 0,
+				'feedback-ok'      : 1,
+				'feedback-info'    : 2,
+				'feedback-warning' : 3,
+				'feedback-error'   : 4
+			};
 
 			constructor(
 				public message:string = '',
 				public level:string = ''
 			) {
 
-			}
-			public static getAllLevels() {
-				return [
-					Feedback.LEVEL_NONE,
-					Feedback.LEVEL_OK,
-					Feedback.LEVEL_INFO,
-					Feedback.LEVEL_WARNING,
-					Feedback.LEVEL_ERROR
-				];
 			}
 		}
 
@@ -176,9 +183,17 @@ module Backbone.Components {
 				var feedback = this.feedbackModel.getFeedback(this.component.attribute);
 				if(typeof feedback == "object") {
 					this.feedbackElement.empty();
+
+					var worstLevel = -1;
+					var worstClass;
+					var allLevelClasses = Feedback.ALL_LEVELS.join(" ");
 					_.each(feedback, (entry:Feedback) => {
+						if(Feedback.LEVEL_MAP[entry.level] > worstLevel) {
+							worstLevel = Feedback.LEVEL_MAP[entry.level];
+							worstClass = entry.level;
+						}
 						var feedbackElement = $(this.template)
-							.removeClass(Feedback.getAllLevels().join(" "))
+							.removeClass(allLevelClasses)
 							.addClass(entry.level)
 						;
 						if(feedbackElement.children().length == 0) {
@@ -188,6 +203,10 @@ module Backbone.Components {
 						}
 						this.feedbackElement.append(feedbackElement);
 					});
+					this.component.$el.removeClass(allLevelClasses);
+					if(worstLevel > -1) {
+						this.component.$el.addClass(worstClass);
+					}
 				}
 			}
 		}
@@ -203,7 +222,6 @@ module Backbone.Components {
 				);
 				this.component.addListener(listItemListener);
 			}
-
 			public static getFactory(event:string, callback:(data:any) => void) {
 				return (component:List) => {
 					return new ListItemEventHandler(component, event, callback);
