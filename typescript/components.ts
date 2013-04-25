@@ -254,7 +254,7 @@ module Backbone {
 				if(attribute.length > 0) {
 					comp.attribute = attribute;
 				} else {
-					comp.attribute = comp.element.data('data-model-attr');
+					comp.attribute = comp.element.attr('data-model-attr');
 				}
 				comp.id = comp.element.prop('id');
 				comp.viewClass = viewClass;

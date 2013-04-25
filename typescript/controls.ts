@@ -166,6 +166,7 @@ module Backbone.Components {
 			}
 		}
 		export module Behaviours {
+			import Controls = Backbone.Components.Controls;
 			export class TypeToChange extends Backbone.Components.Behaviour {
 				constructor(component:Controls.Input) {
 					super(component);
