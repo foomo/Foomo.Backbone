@@ -24,7 +24,11 @@ module Backbone.Components.Behaviours.Validation {
 		}
 
 		export class LengthValidator extends Validation.BaseValidator {
-			private minLength:number;
+            public static MESSAGES = {
+                OK : 'ok',
+                WRONG_LENGTH: 'wrong length'
+            };
+            private minLength:number;
 			private maxLength:number;
 			public static pack(minLength:number, maxLength:number,...attributes:any[])
 			{
@@ -44,7 +48,7 @@ module Backbone.Components.Behaviours.Validation {
 				var valid = value && value.length >= this.minLength && value.length <= this.maxLength;
 				return new Behaviours.Validation.Result(
 					valid,
-					valid?'ok':'wrong length',
+					valid?LengthValidator.MESSAGES.OK:LengthValidator.MESSAGES.WRONG_LENGTH,
 					valid?Behaviours.Feedback.LEVEL_INFO:Behaviours.Feedback.LEVEL_ERROR
 				);
 			}
