@@ -246,6 +246,7 @@ module Backbone {
 			private element:JQuery;
 			private viewClass:any;
 			private itemListeners:ListItemListener[] = [];
+			public itemViews = [];
 			public static factory(element:JQuery, view:Backbone.View, viewClass:any, attribute:string = ''):List {
 				var comp = new List();
 				comp.view = view;
@@ -277,12 +278,14 @@ module Backbone {
 				this.element.empty();
 				var that = this;
 				var index = 0;
+				this.itemViews = [];
 				_.each(value, (item) => {
 					if(typeof item != 'object') {
 						item = {value: item, index: index};
 					}
 					var model = new that.viewClass.model(item);
 					var listItem = new that.viewClass({model:model});
+					that.itemViews.push(listItem);
 					that.element.append(listItem.$el);
 					_.each(that.itemListeners, (listener:ListItemListener) => {
 						listItem.on(listener.event, listener.handler, listener.context);
