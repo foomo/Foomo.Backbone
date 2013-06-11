@@ -167,8 +167,6 @@ module Backbone {
 					var modelValue = model.get(attribute);
 					if(this.getOwnValue() != modelValue) {
 						this.setValue(modelValue);
-					} else {
-						console.log('not changing', this.getValue(), modelValue);
 					}
 				});
 			}
