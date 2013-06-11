@@ -160,7 +160,10 @@ module Backbone {
 			public bindModel(model:Backbone.Model, attribute:string)
 			{
 				model.on('change:' + attribute, (model) => {
-					this.setValue(model.get(attribute));
+					var modelValue = model.get(attribute);
+					if(this.getValue() != modelValue) {
+						this.setValue(modelValue);
+					}
 				});
 			}
 
