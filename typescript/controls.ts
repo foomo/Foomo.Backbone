@@ -49,6 +49,10 @@ module Backbone.Components {
 			{
 				this.element.val(value);
 			}
+			public getOwnValue():any
+			{
+				return this.getValue();
+			}
 			public getValue():any {
 				return this.element.val();
 			}
@@ -69,6 +73,10 @@ module Backbone.Components {
 				} else {
 					this.element.prop('checked', this.value);
 				}
+			}
+			public getOwnValue():any
+			{
+				return this.getValue();
 			}
 			public getValue():any {
 				if(typeof this.value == 'object') {
@@ -156,6 +164,11 @@ module Backbone.Components {
 					]
 				);
 			}
+			public getOwnValue():any
+			{
+				return this.getValue();
+			}
+
 			public setValue(value:any)
 			{
 				this.element.val(value);

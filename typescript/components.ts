@@ -95,6 +95,10 @@ module Backbone {
 			{
 				throw new Error('implement this');
 			}
+			public getOwnValue():any
+			{
+				throw new Error('implement this');
+			}
 			/**
 			 * implement this in your component
 			 */
@@ -161,8 +165,10 @@ module Backbone {
 			{
 				model.on('change:' + attribute, (model) => {
 					var modelValue = model.get(attribute);
-					if(this.getValue() != modelValue) {
+					if(this.getOwnValue() != modelValue) {
 						this.setValue(modelValue);
+					} else {
+						console.log('not changing', this.getValue(), modelValue);
 					}
 				});
 			}
@@ -218,6 +224,10 @@ module Backbone {
 			public getValue():string {
 				return this.$el.text();
 			}
+			public getOwnValue():string
+			{
+				return this.getValue();
+			}
 			public static map(selector:string) {
 				return new Mapping(
 					selector,
@@ -250,6 +260,7 @@ module Backbone {
 			private viewClass:any;
 			private itemListeners:ListItemListener[] = [];
 			public itemViews = [];
+			private ownValue:any[];
 			public static factory(element:JQuery, view:Backbone.View, viewClass:any, attribute:string = ''):List {
 				var comp = new List();
 				comp.view = view;
@@ -277,7 +288,13 @@ module Backbone {
 				return this.view.model.get(this.attribute);
 			}
 
+			public getOwnValue():any[]
+			{
+				return this.ownValue;
+			}
+
 			public setValue(value:any[]) {
+				this.ownValue = value;
 				this.element.empty();
 				var that = this;
 				var index = 0;
