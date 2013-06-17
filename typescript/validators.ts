@@ -14,7 +14,8 @@ module Backbone.Components.Behaviours.Validation {
 			}
 			validate(model:Backbone.Model, attribute:string) {
 				var value = model.get(attribute);
-				var valid = value && value.length > 0;
+				var valid = typeof value == 'string' && value.length > 0;
+				console.log(attribute, value, valid);
 				return new Validation.Result(
 					valid,
 					valid?EmptyValidator.MESSAGES.OK:EmptyValidator.MESSAGES.MUST_NOT_BE_EMPTY,
