@@ -95,6 +95,10 @@ module Backbone {
 			{
 				throw new Error('implement this');
 			}
+			public getOwnValue():any
+			{
+				throw new Error('implement this');
+			}
 			/**
 			 * implement this in your component
 			 */
@@ -160,7 +164,10 @@ module Backbone {
 			public bindModel(model:Backbone.Model, attribute:string)
 			{
 				model.on('change:' + attribute, (model) => {
-					this.setValue(model.get(attribute));
+					var modelValue = model.get(attribute);
+					if(this.getOwnValue() != modelValue) {
+						this.setValue(modelValue);
+					}
 				});
 			}
 
@@ -215,6 +222,10 @@ module Backbone {
 			public getValue():string {
 				return this.$el.text();
 			}
+			public getOwnValue():string
+			{
+				return this.getValue();
+			}
 			public static map(selector:string) {
 				return new Mapping(
 					selector,
@@ -246,6 +257,8 @@ module Backbone {
 			private element:JQuery;
 			private viewClass:any;
 			private itemListeners:ListItemListener[] = [];
+			public itemViews = [];
+			private ownValue:any[];
 			public static factory(element:JQuery, view:Backbone.View, viewClass:any, attribute:string = ''):List {
 				var comp = new List();
 				comp.view = view;
@@ -273,16 +286,24 @@ module Backbone {
 				return this.view.model.get(this.attribute);
 			}
 
+			public getOwnValue():any[]
+			{
+				return this.ownValue;
+			}
+
 			public setValue(value:any[]) {
+				this.ownValue = value;
 				this.element.empty();
 				var that = this;
 				var index = 0;
+				this.itemViews = [];
 				_.each(value, (item) => {
 					if(typeof item != 'object') {
 						item = {value: item, index: index};
 					}
 					var model = new that.viewClass.model(item);
 					var listItem = new that.viewClass({model:model});
+					that.itemViews.push(listItem);
 					that.element.append(listItem.$el);
 					_.each(that.itemListeners, (listener:ListItemListener) => {
 						listItem.on(listener.event, listener.handler, listener.context);
