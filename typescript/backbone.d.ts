@@ -39,7 +39,7 @@ declare module Backbone {
 	interface bind { (eventName: string, callback: (...args: any[]) => void, context?: any): any; }
 	interface unbind { (eventName?: string, callback?: (...args: any[]) => void, context?: any): any; }
 
-	declare class Events {
+	class Events {
 		on(eventName: string, callback: (...args:any[]) => void, context?: any): any;
 		off(eventName?: string, callback?: (...args:any[]) => void, context?: any): any;
 		trigger(eventName: string, ...args: any[]): any;
@@ -242,6 +242,7 @@ declare module Backbone {
 	var  emulateJSONBackbone: bool;
 
 	// Utility
-	function noConflict(): Backbone;
+	//function noConflict(): Backbone;
 	function setDomLibrary(jQueryNew);
+
 }
