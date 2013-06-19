@@ -38,7 +38,7 @@ module Backbone.Components {
 		}
 
 		export module Validation {
-			interface IValidatorFactory {
+			export interface IValidatorFactory {
 				() : BaseValidator;
 			}
 			export class Result {
