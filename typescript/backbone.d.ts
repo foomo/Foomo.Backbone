@@ -222,6 +222,7 @@ declare module Backbone {
 		setElement(element: HTMLElement, delegate?: bool);
 		tagName: string;
 		events: any;
+		className: string;
 
 		el: HTMLElement;
 		$el: any;
