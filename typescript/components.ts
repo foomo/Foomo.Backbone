@@ -263,7 +263,6 @@ module Backbone {
 				var comp = new List();
 				comp.view = view;
 				comp.element = element;
-				console.log(attribute);
 				if(attribute.length > 0) {
 					comp.attribute = attribute;
 				} else {

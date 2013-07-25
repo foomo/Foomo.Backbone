@@ -18,6 +18,8 @@
  */
 
 namespace Foomo\Backbone;
+use Foomo\Modules\MakeResult;
+use Foomo\TypeScript;
 
 /**
  * @link www.foomo.org
@@ -66,5 +68,30 @@ class Module extends \Foomo\Modules\ModuleBase
 		return array(
 			\Foomo\Modules\Resource\Module::getResource('Foomo.TypeScript', '0.1.*')
 		);
+	}
+	public static function make($target, MakeResult $result)
+	{
+		switch($target) {
+			case 'all':
+				$ts = TypeScript::create(self::getBaseDir('typescript') . DIRECTORY_SEPARATOR . 'foomo-backbone.ts')
+					->watch()
+					->generateDeclaration()
+					->compile()
+				;
+				$generatedJSFile = $ts->getOutputFilename();
+				$targetJSFile = self::getHtdocsDir('js') . DIRECTORY_SEPARATOR . 'foomo-backbone.js';
+				$newContents = file_get_contents($generatedJSFile);
+				$oldContents = null;
+				if(file_exists($targetJSFile)) {
+					$oldContents = file_get_contents($targetJSFile);
+				}
+				if($oldContents != $newContents) {
+					file_put_contents($targetJSFile, $newContents);
+					unlink($generatedJSFile);
+				}
+				break;
+			default:
+				parent::make($target, $result);
+		}
 	}
 }
