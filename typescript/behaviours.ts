@@ -30,6 +30,13 @@ module Backbone.Components {
 					Feedback.LEVEL_ERROR
 				];
 			}
+			public static getLevelMap() {
+				var levelMap = {};
+				_.each(Feedback.getAllLevels(), (value, index) => {
+					levelMap[value] = index;
+				});
+				return levelMap;
+			}
 
 		}
 
@@ -180,15 +187,11 @@ module Backbone.Components {
 				var feedback = this.feedbackModel.getFeedback(this.component.attribute);
 				if(typeof feedback == "object") {
 					this.feedbackElement.empty();
-
 					var worstLevel = -1;
 					var worstClass;
 					var allLevels = Feedback.getAllLevels();
 					var allLevelClasses = allLevels.join(" ");
-					var levelMap = {};
-					_.each(allLevels, (value, index) => {
-						levelMap[value] = index;
-					});
+					var levelMap = Feedback.getLevelMap();
 					_.each(feedback, (entry:Feedback) => {
 						if(levelMap[entry.level] > worstLevel) {
 							worstLevel = levelMap[entry.level];
