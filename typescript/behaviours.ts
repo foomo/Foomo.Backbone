@@ -7,27 +7,13 @@ module Backbone.Components {
 		 * give feedback to the state of a model, so that it can be rendered in the view
 		 */
 		export class Feedback {
+
 			static LEVEL_NONE    = 'feedback-none';
 			static LEVEL_OK      = 'feedback-ok';
 			static LEVEL_INFO    = 'feedback-info';
 			static LEVEL_WARNING = 'feedback-warning';
 			static LEVEL_ERROR   = 'feedback-error';
 
-			static ALL_LEVELS = [
-				Feedback.LEVEL_NONE,
-				Feedback.LEVEL_OK,
-				Feedback.LEVEL_INFO,
-				Feedback.LEVEL_WARNING,
-				Feedback.LEVEL_ERROR
-			];
-
-			static LEVEL_MAP = {
-				'feedback-none'    : 0,
-				'feedback-ok'      : 1,
-				'feedback-info'    : 2,
-				'feedback-warning' : 3,
-				'feedback-error'   : 4
-			};
 
 			constructor(
 				public message:string = '',
@@ -35,6 +21,16 @@ module Backbone.Components {
 			) {
 
 			}
+			public static getAllLevels() {
+				return [
+					Feedback.LEVEL_NONE,
+					Feedback.LEVEL_OK,
+					Feedback.LEVEL_INFO,
+					Feedback.LEVEL_WARNING,
+					Feedback.LEVEL_ERROR
+				];
+			}
+
 		}
 
 		export module Validation {
@@ -50,7 +46,6 @@ module Backbone.Components {
 
 				}
 			}
-
 			export class BaseValidator {
 				public validate(model:Backbone.Model, attribute:string):Result {
 					return new Result(false, 'implement me', Feedback.LEVEL_ERROR);
@@ -135,8 +130,10 @@ module Backbone.Components {
 		 * a behaviour that lets you render feedback to your UI
 		 */
 		export class ComponentFeedback extends Backbone.Components.Behaviour {
+
 			public static FEEDBACK_CLASS = 'feedback';
 			public static FEEDBACK_TEXT_CLASS = 'feedback-text';
+
 			private template:string;
 			private feedbackElement:JQuery;
 			constructor(
@@ -186,10 +183,15 @@ module Backbone.Components {
 
 					var worstLevel = -1;
 					var worstClass;
-					var allLevelClasses = Feedback.ALL_LEVELS.join(" ");
+					var allLevels = Feedback.getAllLevels();
+					var allLevelClasses = allLevels.join(" ");
+					var levelMap = {};
+					_.each(allLevels, (value, index) => {
+						levelMap[value] = index;
+					});
 					_.each(feedback, (entry:Feedback) => {
-						if(Feedback.LEVEL_MAP[entry.level] > worstLevel) {
-							worstLevel = Feedback.LEVEL_MAP[entry.level];
+						if(levelMap[entry.level] > worstLevel) {
+							worstLevel = levelMap[entry.level];
 							worstClass = entry.level;
 						}
 						var feedbackElement = $(this.template)

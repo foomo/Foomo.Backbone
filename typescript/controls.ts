@@ -183,7 +183,8 @@ module Backbone.Components {
 			export class TypeToChange extends Backbone.Components.Behaviour {
 				constructor(component:Controls.Input) {
 					super(component);
-					if(component.element && component.element.prop('tagName') == 'INPUT' && component.element.prop('type') == 'text') {
+					var compType = component.element.prop('type');
+					if(component.element && component.element.prop('tagName') == 'INPUT' && (compType == 'text' || compType == 'password')) {
 						component.element.keyup((event) => {
 							component.handleChange(component.getValue());
 						});
@@ -197,6 +198,7 @@ module Backbone.Components {
 						return behaviour;
 					} catch(error) {
 						// nope
+						console.warn('no type to change for this one', component);
 					}
 				}
 			}
