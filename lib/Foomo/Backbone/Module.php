@@ -79,16 +79,10 @@ class Module extends \Foomo\Modules\ModuleBase
 					->compile()
 				;
 				$generatedJSFile = $ts->getOutputFilename();
-				$targetJSFile = self::getHtdocsDir('js') . DIRECTORY_SEPARATOR . 'foomo-backbone.js';
-				$newContents = file_get_contents($generatedJSFile);
-				$oldContents = null;
-				if(file_exists($targetJSFile)) {
-					$oldContents = file_get_contents($targetJSFile);
-				}
-				if($oldContents != $newContents) {
-					file_put_contents($targetJSFile, $newContents);
-					unlink($generatedJSFile);
-				}
+				Builder::tweakAndWriteGeneratedJS(
+					$generatedJSFile,
+					Builder::moveSourceMapToRightPlace($generatedJSFile)
+				);
 				break;
 			default:
 				parent::make($target, $result);
