@@ -27,7 +27,20 @@ use Foomo\TypeScript;
  */
 class Builder
 {
-	public static function moveSourceMapToRightPlace($generatedJSFile)
+	public static function buildFoomoBackboneJS()
+	{
+		$ts = TypeScript::create(Module::getBaseDir('typescript') . DIRECTORY_SEPARATOR . 'foomo-backbone.ts')
+			->watch()
+			->generateDeclaration()
+			->compile()
+		;
+		$generatedJSFile = $ts->getOutputFilename();
+		self::tweakAndWriteGeneratedJS(
+			$generatedJSFile,
+			self::moveSourceMapToRightPlace($generatedJSFile)
+		);
+	}
+	private static function moveSourceMapToRightPlace($generatedJSFile)
 	{
 		$generatedSourceMapFile = $generatedJSFile . '.map';
 		$generatedSourceMapLocation = \Foomo\TypeScript\Module::getHtdocsVarPath($targetMapName = 'foomo-backbone.js.map');
@@ -38,7 +51,7 @@ class Builder
 		unlink($generatedSourceMapFile);
 		return $generatedSourceMapLocation;
 	}
-	public static function tweakAndWriteGeneratedJS($generatedJSFile, $generatedSourceMapLocation)
+	private static function tweakAndWriteGeneratedJS($generatedJSFile, $generatedSourceMapLocation)
 	{
 		$targetJSFile = Module::getHtdocsDir('js') . DIRECTORY_SEPARATOR . 'foomo-backbone.js';
 

@@ -18,8 +18,8 @@
  */
 
 namespace Foomo\Backbone;
+
 use Foomo\Modules\MakeResult;
-use Foomo\TypeScript;
 
 /**
  * @link www.foomo.org
@@ -73,16 +73,7 @@ class Module extends \Foomo\Modules\ModuleBase
 	{
 		switch($target) {
 			case 'all':
-				$ts = TypeScript::create(self::getBaseDir('typescript') . DIRECTORY_SEPARATOR . 'foomo-backbone.ts')
-					->watch()
-					->generateDeclaration()
-					->compile()
-				;
-				$generatedJSFile = $ts->getOutputFilename();
-				Builder::tweakAndWriteGeneratedJS(
-					$generatedJSFile,
-					Builder::moveSourceMapToRightPlace($generatedJSFile)
-				);
+				Builder::buildFoomoBackboneJS();
 				break;
 			default:
 				parent::make($target, $result);
