@@ -336,27 +336,27 @@ var Backbone;
                     this.message = message;
                     this.level = level;
                 }
+                Feedback.getAllLevels = function () {
+                    return [
+                        Feedback.LEVEL_NONE,
+                        Feedback.LEVEL_OK,
+                        Feedback.LEVEL_INFO,
+                        Feedback.LEVEL_WARNING,
+                        Feedback.LEVEL_ERROR
+                    ];
+                };
+                Feedback.getLevelMap = function () {
+                    var levelMap = {};
+                    _.each(Feedback.getAllLevels(), function (value, index) {
+                        levelMap[value] = index;
+                    });
+                    return levelMap;
+                };
                 Feedback.LEVEL_NONE = 'feedback-none';
                 Feedback.LEVEL_OK = 'feedback-ok';
                 Feedback.LEVEL_INFO = 'feedback-info';
                 Feedback.LEVEL_WARNING = 'feedback-warning';
                 Feedback.LEVEL_ERROR = 'feedback-error';
-
-                Feedback.ALL_LEVELS = [
-                    Feedback.LEVEL_NONE,
-                    Feedback.LEVEL_OK,
-                    Feedback.LEVEL_INFO,
-                    Feedback.LEVEL_WARNING,
-                    Feedback.LEVEL_ERROR
-                ];
-
-                Feedback.LEVEL_MAP = {
-                    'feedback-none': 0,
-                    'feedback-ok': 1,
-                    'feedback-info': 2,
-                    'feedback-warning': 3,
-                    'feedback-error': 4
-                };
                 return Feedback;
             })();
             Behaviours.Feedback = Feedback;
@@ -374,7 +374,6 @@ var Backbone;
                     return Result;
                 })();
                 Validation.Result = Result;
-
                 var BaseValidator = (function () {
                     function BaseValidator() {
                     }
@@ -520,13 +519,14 @@ var Backbone;
                     var feedback = this.feedbackModel.getFeedback(this.component.attribute);
                     if (typeof feedback == "object") {
                         this.feedbackElement.empty();
-
                         var worstLevel = -1;
                         var worstClass;
-                        var allLevelClasses = Feedback.ALL_LEVELS.join(" ");
+                        var allLevels = Feedback.getAllLevels();
+                        var allLevelClasses = allLevels.join(" ");
+                        var levelMap = Feedback.getLevelMap();
                         _.each(feedback, function (entry) {
-                            if (Feedback.LEVEL_MAP[entry.level] > worstLevel) {
-                                worstLevel = Feedback.LEVEL_MAP[entry.level];
+                            if (levelMap[entry.level] > worstLevel) {
+                                worstLevel = levelMap[entry.level];
                                 worstClass = entry.level;
                             }
                             var feedbackElement = $(_this.template).removeClass(allLevelClasses).addClass(entry.level);
@@ -741,7 +741,8 @@ var Backbone;
                     __extends(TypeToChange, _super);
                     function TypeToChange(component) {
                         _super.call(this, component);
-                        if (component.element && component.element.prop('tagName') == 'INPUT' && component.element.prop('type') == 'text') {
+                        var compType = component.element.prop('type');
+                        if (component.element && component.element.prop('tagName') == 'INPUT' && (compType == 'text' || compType == 'password')) {
                             component.element.keyup(function (event) {
                                 component.handleChange(component.getValue());
                             });
@@ -754,6 +755,8 @@ var Backbone;
                             var behaviour = new TypeToChange(component);
                             return behaviour;
                         } catch (error) {
+                            // nope
+                            console.warn('no type to change for this one', component);
                         }
                     };
                     return TypeToChange;

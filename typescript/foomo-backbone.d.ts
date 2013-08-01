@@ -138,15 +138,9 @@ declare module Backbone.Components.Behaviours {
         static LEVEL_INFO: string;
         static LEVEL_WARNING: string;
         static LEVEL_ERROR: string;
-        static ALL_LEVELS: string[];
-        static LEVEL_MAP: {
-            'feedback-none': number;
-            'feedback-ok': number;
-            'feedback-info': number;
-            'feedback-warning': number;
-            'feedback-error': number;
-        };
         constructor(message?: string, level?: string);
+        static getAllLevels(): string[];
+        static getLevelMap(): {};
     }
     module Validation {
         interface IValidatorFactory {
