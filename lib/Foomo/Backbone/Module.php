@@ -30,7 +30,7 @@ class Module extends \Foomo\Modules\ModuleBase
 	//---------------------------------------------------------------------------------------------
 	// ~ Constants
 	//---------------------------------------------------------------------------------------------
-	const VERSION = '0.2.0';
+	const VERSION = '0.2.1';
 	/**
 	 * the name of this module
 	 *
@@ -66,7 +66,7 @@ class Module extends \Foomo\Modules\ModuleBase
 	public static function getResources()
 	{
 		return array(
-			\Foomo\Modules\Resource\Module::getResource('Foomo.TypeScript', '0.1.*')
+			\Foomo\Modules\Resource\Module::getResource('Foomo.TypeScript', '0.9.*')
 		);
 	}
 	public static function make($target, MakeResult $result)

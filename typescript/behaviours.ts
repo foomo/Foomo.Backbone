@@ -46,7 +46,7 @@ module Backbone.Components {
 			}
 			export class Result {
 				constructor(
-					public valid:bool = true,
+					public valid:boolean = true,
 					public message:string = '',
 					public level:string = Feedback.LEVEL_OK
 				) {
@@ -80,7 +80,7 @@ module Backbone.Components {
 				public static create(model:Backbone.Model, feedbackModel:FeedbackModel) {
 					return new Validator(model, feedbackModel);
 				}
-				public chain(...packages:Package[]):bool {
+				public chain(...packages:Package[]):boolean {
 					var ret = true;
 					var feedbackAttributes = {};
 					_.each(packages, (package:Package) => {

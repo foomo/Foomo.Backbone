@@ -13,16 +13,16 @@ declare module Backbone {
 	}
 
 	export interface CreateOptions extends Silenceable {
-		wait: bool;
+		wait: boolean;
 	}
 
 	export interface HistoryOptions extends Silenceable {
-		pushState?: bool;
+		pushState?: boolean;
 		root?: string;
 	}
 
 	export interface NavigateOptions {
-		trigger: bool;
+		trigger: boolean;
 	}
 
 	export interface RouterOptions {
@@ -30,7 +30,7 @@ declare module Backbone {
 	}
 
 	export interface Silenceable {
-		silent?: bool;
+		silent?: boolean;
 	}
 
 	interface on { (eventName: string, callback: (...args: any[]) => void, context?: any): any; }
@@ -79,9 +79,9 @@ declare module Backbone {
 		defaults(): any;
 		destroy(options?: JQueryAjaxSettings);
 		escape(attribute: string);
-		has(attribute: string): bool;
-		hasChanged(attribute?: string): bool;
-		isNew(): bool;
+		has(attribute: string): boolean;
+		hasChanged(attribute?: string): boolean;
+		isNew(): boolean;
 		isValid(): string;
 		previous(attribute: string): any;
 		previousAttributes(): any[];
@@ -101,8 +101,8 @@ declare module Backbone {
 
 		constructor (models?: any, options?: any);
 
-		comparator(element: Model): number;
-		comparator(element: Model): string;
+		comparator(element: Model): any;
+		//comparator(element: Model): string;
 		comparator(compare: Model, to?: Model): number;
 
 		add(model: Model, options?: AddOptions);
@@ -121,33 +121,33 @@ declare module Backbone {
 		unshift(model: Model, options?: AddOptions);
 		where(properies: any): Model[];
 
-		all(iterator: (element: Model, index: number) => bool, context?: any): bool;
-		any(iterator: (element: Model, index: number) => bool, context?: any): bool;
+		all(iterator: (element: Model, index: number) => boolean, context?: any): boolean;
+		any(iterator: (element: Model, index: number) => boolean, context?: any): boolean;
 		collect(iterator: (element: Model, index: number, context?: any) => any[], context?: any): any[];
 		compact(): Model[];
-		contains(value: any): bool;
+		contains(value: any): boolean;
 		countBy(iterator: (element: Model, index: number) => any): any[];
 		countBy(attribute: string): any[];
-		detect(iterator: (item: any) => bool, context?: any): any; // ???
+		detect(iterator: (item: any) => boolean, context?: any): any; // ???
 		difference(...model: Model[]): Model[];
 		drop(): Model;
 		drop(n: number): Model[];
 		each(iterator: (element: Model, index: number, list?: any) => void, context?: any);
-		every(iterator: (element: Model, index: number) => bool, context?: any): bool;
-		filter(iterator: (element: Model, index: number) => bool, context?: any): Model[];
-		find(iterator: (element: Model, index: number) => bool, context?: any): Model;
+		every(iterator: (element: Model, index: number) => boolean, context?: any): boolean;
+		filter(iterator: (element: Model, index: number) => boolean, context?: any): Model[];
+		find(iterator: (element: Model, index: number) => boolean, context?: any): Model;
 		first(): Model;
 		first(n: number): Model[];
-		flatten(shallow?: bool): Model[];
+		flatten(shallow?: boolean): Model[];
 		foldl(iterator: (memo: any, element: Model, index: number) => any, initialMemo: any, context?: any): any;
 		forEach(iterator: (element: Model, index: number, list?: any) => void, context?: any);
-		include(value: any): bool;
-		indexOf(element: Model, isSorted?: bool): number;
+		include(value: any): boolean;
+		indexOf(element: Model, isSorted?: boolean): number;
 		initial(): Model;
 		initial(n: number): Model[];
 		inject(iterator: (memo: any, element: Model, index: number) => any, initialMemo: any, context?: any): any;
 		intersection(...model: Model[]): Model[];
-		isEmpty(object: any): bool;
+		isEmpty(object: any): boolean;
 		invoke(methodName: string, arguments?: any[]);
 		last(): Model;
 		last(n: number): Model[];
@@ -160,21 +160,21 @@ declare module Backbone {
 		select(iterator: any, context?: any): any[];
 		size(): number;
 		shuffle(): any[];
-		some(iterator: (element: Model, index: number) => bool, context?: any): bool;
+		some(iterator: (element: Model, index: number) => boolean, context?: any): boolean;
 		sortBy(iterator: (element: Model, index: number) => number, context?: any): Model[];
 		sortBy(attribute: string, context?: any): Model[];
 		sortedIndex(element: Model, iterator?: (element: Model, index: number) => number): number;
 		range(stop: number, step?: number);
 		range(start: number, stop: number, step?: number);
 		reduceRight(iterator: (memo: any, element: Model, index: number) => any, initialMemo: any, context?: any): any[];
-		reject(iterator: (element: Model, index: number) => bool, context?: any): Model[];
+		reject(iterator: (element: Model, index: number) => boolean, context?: any): Model[];
 		rest(): Model;
 		rest(n: number): Model[];
 		tail(): Model;
 		tail(n: number): Model[];
 		toArray(): any[];
 		union(...model: Model[]): Model[];
-		uniq(isSorted?: bool, iterator?: (element: Model, index: number) => bool): Model[];
+		uniq(isSorted?: boolean, iterator?: (element: Model, index: number) => boolean): Model[];
 		without(...values: any[]): Model[];
 		zip(...model: Model[]): Model[];
 	}
@@ -196,7 +196,7 @@ declare module Backbone {
 		start(options?: HistoryOptions);
 		navigate(fragment: string, options: any);
 		pushSate();
-		getFragment(fragment?: string, forcePushState?: bool): string;
+		getFragment(fragment?: string, forcePushState?: boolean): string;
 		getHash(window?: Window): string;
 	}
 
@@ -219,7 +219,7 @@ declare module Backbone {
 		$(selector: string): any;
 		model: Model;
 		make(tagName: string, attrs?, opts?): View;
-		setElement(element: HTMLElement, delegate?: bool);
+		setElement(element: HTMLElement, delegate?: boolean);
 		tagName: string;
 		events: any;
 		className: string;
@@ -239,8 +239,8 @@ declare module Backbone {
 
 	// SYNC
 	function sync(method, model, options?: JQueryAjaxSettings);
-	var  emulateHTTP: bool;
-	var  emulateJSONBackbone: bool;
+	var  emulateHTTP: boolean;
+	var  emulateJSONBackbone: boolean;
 
 	// Utility
 	//function noConflict(): Backbone;

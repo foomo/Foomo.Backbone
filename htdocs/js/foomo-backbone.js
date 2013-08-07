@@ -4,8 +4,6 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-///<reference path='./backbone.d.ts' />
-///<reference path='./underscore.d.ts' />
 var Backbone;
 (function (Backbone) {
     (function (Components) {
@@ -33,9 +31,6 @@ var Backbone;
             return comps;
         };
 
-        /**
-        * define a binding for an event, that will be processed by a handler
-        */
         var EventBinding = (function () {
             function EventBinding(model, event, handler) {
                 this.model = model;
@@ -46,24 +41,14 @@ var Backbone;
         })();
         Components.EventBinding = EventBinding;
 
-        /**
-        * describe the mapping of components into the dom with support for events and behaviours,
-        * that will be attached to the created components
-        */
         var Mapping = (function () {
-            function Mapping(selector, factory, eventBindings, // dear typescript i want an array of closures
-            behaviours) {
+            function Mapping(selector, factory, eventBindings, behaviours) {
                 if (typeof behaviours === "undefined") { behaviours = []; }
                 this.selector = selector;
                 this.factory = factory;
                 this.eventBindings = eventBindings;
                 this.behaviours = behaviours;
             }
-            /**
-            * add another behaviour / its factory
-            * @param behaviourFactory
-            * @returns {Backbone.Components.Mapping}
-            */
             Mapping.prototype.addBehaviour = function (behaviourFactory) {
                 this.behaviours.push(behaviourFactory);
                 return this;
@@ -72,9 +57,6 @@ var Backbone;
         })();
         Components.Mapping = Mapping;
 
-        /**
-        * a behaviour can be pretty much anything - thus its definition is very
-        */
         var Behaviour = (function () {
             function Behaviour(component) {
                 this.component = component;
@@ -83,9 +65,6 @@ var Backbone;
         })();
         Components.Behaviour = Behaviour;
 
-        /**
-        * the mother of all components
-        */
         var BaseComponent = (function (_super) {
             __extends(BaseComponent, _super);
             function BaseComponent() {
@@ -93,9 +72,6 @@ var Backbone;
                 this.bidirectionalBinding = true;
                 this.behaviours = [];
             }
-            /**
-            * implement this in your component
-            */
             BaseComponent.prototype.getValue = function () {
                 throw new Error('implement this');
             };
@@ -103,19 +79,10 @@ var Backbone;
                 throw new Error('implement this');
             };
 
-            /**
-            * implement this in your component
-            */
             BaseComponent.prototype.setValue = function (value) {
                 throw new Error('implement this');
             };
 
-            /**
-            * start an event binding | or many
-            * @param event
-            * @param model
-            * @returns {Backbone.Components.BaseComponent}
-            */
             BaseComponent.prototype.when = function (event, model) {
                 if (typeof model == 'undefined') {
                     model = this.view.model;
@@ -127,11 +94,6 @@ var Backbone;
                 return this;
             };
 
-            /**
-            * add a handler to the started event binding - you can do this multiple times
-            * @param handler
-            * @returns {Backbone.Components.BaseComponent}
-            */
             BaseComponent.prototype.then = function (handler) {
                 if (typeof this.whenData == 'object' && typeof this.whenData.event == 'string' && typeof this.whenData.model == 'object') {
                     this.attachBinding(new Backbone.Components.EventBinding(this.whenData.model, this.whenData.event, handler));
@@ -141,11 +103,6 @@ var Backbone;
                 return this;
             };
 
-            /**
-            * direct / less readable way to attach an event binding
-            * @param binding
-            * @returns {Backbone.Components.BaseComponent}
-            */
             BaseComponent.prototype.attachBinding = function (binding) {
                 var _this = this;
                 binding.model.on(binding.event, function (model) {
@@ -154,11 +111,6 @@ var Backbone;
                 return this;
             };
 
-            /**
-            * bind a model
-            * @param model
-            * @param attribute
-            */
             BaseComponent.prototype.bindModel = function (model, attribute) {
                 var _this = this;
                 model.on('change:' + attribute, function (model) {
@@ -169,11 +121,6 @@ var Backbone;
                 });
             };
 
-            /**
-            * handle value change - in bidir mode, this writes back to the model
-            * in any case it fires a change event
-            * @param value
-            */
             BaseComponent.prototype.handleChange = function (value) {
                 if (this.bidirectionalBinding && this.attribute) {
                     this.view.model.set(this.attribute, value);
@@ -181,11 +128,6 @@ var Backbone;
                 this.trigger('change', this);
             };
 
-            /**
-            * attach a behaviour
-            *
-            * @param factory
-            */
             BaseComponent.prototype.attachBehaviour = function (factory) {
                 var behaviour = factory(this);
                 if (typeof behaviour == 'object') {
@@ -196,9 +138,6 @@ var Backbone;
         })(Backbone.View);
         Components.BaseComponent = BaseComponent;
 
-        /**
-        * displays an attribute of a model, deriving the attr from its data-... html attribute
-        */
         var Display = (function (_super) {
             __extends(Display, _super);
             function Display() {
@@ -307,10 +246,6 @@ var Backbone;
                 });
             };
 
-            /**
-            * the listeners will be actually attached, the next time the items are rerendered
-            * @param listener
-            */
             List.prototype.addListener = function (listener) {
                 this.itemListeners.push(listener);
             };
@@ -322,13 +257,8 @@ var Backbone;
 })(Backbone || (Backbone = {}));
 var Backbone;
 (function (Backbone) {
-    ///<reference path='./components.ts' />
     (function (Components) {
         (function (Behaviours) {
-            // import Components = Backbone.Components;
-            /**
-            * give feedback to the state of a model, so that it can be rendered in the view
-            */
             var Feedback = (function () {
                 function Feedback(message, level) {
                     if (typeof message === "undefined") { message = ''; }
@@ -443,9 +373,6 @@ var Backbone;
             })(Behaviours.Validation || (Behaviours.Validation = {}));
             var Validation = Behaviours.Validation;
 
-            /**
-            * a model, that holds feedback and can be bound in a view
-            */
             var FeedbackModel = (function (_super) {
                 __extends(FeedbackModel, _super);
                 function FeedbackModel(options) {
@@ -471,9 +398,6 @@ var Backbone;
             })(Backbone.Model);
             Behaviours.FeedbackModel = FeedbackModel;
 
-            /**
-            * a behaviour that lets you render feedback to your UI
-            */
             var ComponentFeedback = (function (_super) {
                 __extends(ComponentFeedback, _super);
                 function ComponentFeedback(component, feedbackModel) {
@@ -483,12 +407,10 @@ var Backbone;
                     this.feedbackElement = this.component.$('.' + ComponentFeedback.FEEDBACK_CLASS);
                     if (this.component.attribute && this.feedbackElement) {
                         if (this.feedbackElement.children().length == 1) {
-                            // we will be working with a template
                             var firstChild = $(this.feedbackElement.children()[0]);
                             this.template = $.trim(this.feedbackElement.html());
                             this.feedbackElement.empty();
                         } else {
-                            // we will be making elements ourselves
                             var tagName = 'div';
                             switch (this.feedbackElement.prop('tagName')) {
                                 case 'UL':
@@ -571,12 +493,8 @@ var Backbone;
 })(Backbone || (Backbone = {}));
 var Backbone;
 (function (Backbone) {
-    ///<reference path='./components.ts' />
     (function (Components) {
         (function (Controls) {
-            /**
-            * a simple input
-            */
             var Input = (function (_super) {
                 __extends(Input, _super);
                 function Input() {
@@ -628,9 +546,6 @@ var Backbone;
             })(Backbone.Components.BaseComponent);
             Controls.Input = Input;
 
-            /**
-            * a checkbox
-            */
             var Checkbox = (function (_super) {
                 __extends(Checkbox, _super);
                 function Checkbox() {
@@ -663,9 +578,6 @@ var Backbone;
             })(Input);
             Controls.Checkbox = Checkbox;
 
-            /**
-            * a dropdown
-            */
             var Select = (function (_super) {
                 __extends(Select, _super);
                 function Select() {
@@ -695,25 +607,12 @@ var Backbone;
                     });
                 };
 
-                Select.map = /**
-                * use this one, if your dropdown has fixed values
-                * @param selector
-                * @param bindings
-                * @returns {Backbone.Components.Mapping}
-                */
-                function (selector, bindings) {
+                Select.map = function (selector, bindings) {
                     if (typeof bindings === "undefined") { bindings = []; }
                     return new Components.Mapping(selector, Select.factory, bindings);
                 };
 
-                Select.mapWithOptionsFrom = /**
-                * use this one, if the contents of your dropdown are to be bound to a model
-                * @param selector
-                * @param optionsModel
-                * @param optionsAttribute
-                * @returns {Backbone.Components.Mapping}
-                */
-                function (selector, optionsAttribute, optionsModel) {
+                Select.mapWithOptionsFrom = function (selector, optionsAttribute, optionsModel) {
                     return new Components.Mapping(selector, Select.factory, [
                         new Backbone.Components.EventBinding(optionsModel, 'change:' + optionsAttribute, function (model, component) {
                             var oldValue = component.getValue();
@@ -755,7 +654,6 @@ var Backbone;
                             var behaviour = new TypeToChange(component);
                             return behaviour;
                         } catch (error) {
-                            // nope
                             console.warn('no type to change for this one', component);
                         }
                     };
@@ -846,4 +744,4 @@ var Backbone;
     })(Backbone.Components || (Backbone.Components = {}));
     var Components = Backbone.Components;
 })(Backbone || (Backbone = {}));
-//# sourceMappingURL=/foomo/modulesVar/Foomo.TypeScript/foomo-backbone.js.map
+//# sourceMappingURL=/foomo/modules/Foomo.Backbone/foomo-backbone.js.map

@@ -80,7 +80,7 @@ module Backbone {
 			public view:Backbone.View;
 			public id:string;
 			public attribute:string;
-			public bidirectionalBinding:bool = true;
+			public bidirectionalBinding:boolean = true;
 
 			public behaviours:Behaviour[] = [];
 

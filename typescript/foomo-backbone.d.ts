@@ -1,41 +1,25 @@
+/// <reference path="backbone.d.ts" />
+/// <reference path="underscore.d.ts" />
 declare module Backbone.Components {
     var mapToView: (view: Backbone.View, mappings: Mapping[]) => {};
-    /**
-    * define a binding for an event, that will be processed by a handler
-    */
     class EventBinding {
         public model: Backbone.Model;
         public event: string;
         public handler: (model: Backbone.Model, component: BaseComponent) => void;
         constructor(model: Backbone.Model, event: string, handler: (model: Backbone.Model, component: BaseComponent) => void);
     }
-    /**
-    * describe the mapping of components into the dom with support for events and behaviours,
-    * that will be attached to the created components
-    */
     class Mapping {
         public selector: string;
         public factory: (element: JQuery, view: Backbone.View) => BaseComponent;
         public eventBindings: EventBinding[];
         public behaviours: any[];
         constructor(selector: string, factory: (element: JQuery, view: Backbone.View) => BaseComponent, eventBindings: EventBinding[], behaviours?: any[]);
-        /**
-        * add another behaviour / its factory
-        * @param behaviourFactory
-        * @returns {Backbone.Components.Mapping}
-        */
         public addBehaviour(behaviourFactory: (component: BaseComponent) => Behaviour): Mapping;
     }
-    /**
-    * a behaviour can be pretty much anything - thus its definition is very
-    */
     class Behaviour {
         public component: BaseComponent;
         constructor(component: BaseComponent);
     }
-    /**
-    * the mother of all components
-    */
     class BaseComponent extends Backbone.View {
         public view: Backbone.View;
         public id: string;
@@ -43,56 +27,16 @@ declare module Backbone.Components {
         public bidirectionalBinding: boolean;
         public behaviours: Behaviour[];
         private whenData;
-        /**
-        * implement this in your component
-        */
         public getValue(): any;
         public getOwnValue(): any;
-        /**
-        * implement this in your component
-        */
         public setValue(value: any): void;
-        /**
-        * start an event binding | or many
-        * @param event
-        * @param model
-        * @returns {Backbone.Components.BaseComponent}
-        */
         public when(event: string, model?: Backbone.Model): BaseComponent;
-        /**
-        * add a handler to the started event binding - you can do this multiple times
-        * @param handler
-        * @returns {Backbone.Components.BaseComponent}
-        */
         public then(handler: (model: Backbone.Model, component: BaseComponent) => void): BaseComponent;
-        /**
-        * direct / less readable way to attach an event binding
-        * @param binding
-        * @returns {Backbone.Components.BaseComponent}
-        */
         public attachBinding(binding: EventBinding): BaseComponent;
-        /**
-        * bind a model
-        * @param model
-        * @param attribute
-        */
         public bindModel(model: Backbone.Model, attribute: string): void;
-        /**
-        * handle value change - in bidir mode, this writes back to the model
-        * in any case it fires a change event
-        * @param value
-        */
         public handleChange(value): void;
-        /**
-        * attach a behaviour
-        *
-        * @param factory
-        */
         public attachBehaviour(factory: (comp: BaseComponent) => Behaviour): void;
     }
-    /**
-    * displays an attribute of a model, deriving the attr from its data-... html attribute
-    */
     class Display extends BaseComponent {
         public filter: (value: any) => string;
         static factory(element: JQuery, view: Backbone.View, filter?: (value: any) => string): Display;
@@ -119,17 +63,10 @@ declare module Backbone.Components {
         public getValue();
         public getOwnValue(): any[];
         public setValue(value: any[]): void;
-        /**
-        * the listeners will be actually attached, the next time the items are rerendered
-        * @param listener
-        */
         public addListener(listener: ListItemListener): void;
     }
 }
 declare module Backbone.Components.Behaviours {
-    /**
-    * give feedback to the state of a model, so that it can be rendered in the view
-    */
     class Feedback {
         public message: string;
         public level: string;
@@ -170,18 +107,12 @@ declare module Backbone.Components.Behaviours {
             public chain(...packages: Package[]): boolean;
         }
     }
-    /**
-    * a model, that holds feedback and can be bound in a view
-    */
     class FeedbackModel extends Backbone.Model {
         constructor(options?: any);
         public clearFeedback(attribute: string): void;
         public addFeedback(field: string, message: string, level?: string): void;
         public getFeedback(field: string): Feedback[];
     }
-    /**
-    * a behaviour that lets you render feedback to your UI
-    */
     class ComponentFeedback extends Components.Behaviour {
         public component: Components.BaseComponent;
         public feedbackModel: FeedbackModel;
@@ -200,9 +131,6 @@ declare module Backbone.Components.Behaviours {
     }
 }
 declare module Backbone.Components.Controls {
-    /**
-    * a simple input
-    */
     class Input extends Components.BaseComponent {
         public element: JQuery;
         static factory(element: JQuery, view: Backbone.View): Input;
@@ -211,9 +139,6 @@ declare module Backbone.Components.Controls {
         public getOwnValue(): any;
         public getValue(): any;
     }
-    /**
-    * a checkbox
-    */
     class Checkbox extends Input {
         public element: JQuery;
         private value;
@@ -221,28 +146,12 @@ declare module Backbone.Components.Controls {
         public getOwnValue(): any;
         public getValue(): any;
     }
-    /**
-    * a dropdown
-    */
     class Select extends Components.BaseComponent {
         public element: JQuery;
         public options: any;
         static factory(element: JQuery, view: Backbone.View): Select;
         private static loadOptions(model, component, optionsAttribute);
-        /**
-        * use this one, if your dropdown has fixed values
-        * @param selector
-        * @param bindings
-        * @returns {Backbone.Components.Mapping}
-        */
         static map(selector, bindings?: Components.EventBinding[]): Components.Mapping;
-        /**
-        * use this one, if the contents of your dropdown are to be bound to a model
-        * @param selector
-        * @param optionsModel
-        * @param optionsAttribute
-        * @returns {Backbone.Components.Mapping}
-        */
         static mapWithOptionsFrom(selector: string, optionsAttribute: string, optionsModel: Backbone.Model): Components.Mapping;
         public getOwnValue(): any;
         public setValue(value: any): void;
