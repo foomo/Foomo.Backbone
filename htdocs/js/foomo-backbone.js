@@ -744,4 +744,4 @@ var Backbone;
     })(Backbone.Components || (Backbone.Components = {}));
     var Components = Backbone.Components;
 })(Backbone || (Backbone = {}));
-//# sourceMappingURL=/foomo/modules/Foomo.Backbone/foomo-backbone.js.map
+//# sourceMappingURL=/foomo/modules/Foomo.Backbone/js/foomo-backbone.js.map

@@ -30,7 +30,6 @@ class Builder
 	public static function buildFoomoBackboneJS()
 	{
 		TypeScript::create(Module::getBaseDir('typescript') . DIRECTORY_SEPARATOR . 'foomo-backbone.ts')
-			->watch()
 			->generateDeclaration()
 			->out($generatedJSFile = Module::getBaseDir('typescript') . DIRECTORY_SEPARATOR . 'foomo-backbone.js')
 			->compile()
@@ -43,10 +42,10 @@ class Builder
 	private static function moveSourceMapToRightPlace($generatedJSFile)
 	{
 		$generatedSourceMapFile = $generatedJSFile . '.map';
-		$generatedSourceMapLocation = \Foomo\Backbone\Module::getHtdocsPath($targetMapName = 'foomo-backbone.js.map');
+		$generatedSourceMapLocation = \Foomo\Backbone\Module::getHtdocsPath($targetMapName = 'js/foomo-backbone.js.map');
 		file_put_contents(
-			\Foomo\Backbone\Module::getHtdocsDir('js') . DIRECTORY_SEPARATOR . $targetMapName,
-			file_get_contents($generatedSourceMapFile)
+			$file = \Foomo\Backbone\Module::getHtdocsDir() . DIRECTORY_SEPARATOR . $targetMapName,
+			$map = file_get_contents($generatedSourceMapFile)
 		);
 		unlink($generatedSourceMapFile);
 		return $generatedSourceMapLocation;
