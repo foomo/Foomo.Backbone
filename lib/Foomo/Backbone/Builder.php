@@ -31,6 +31,11 @@ class Builder
 	{
 		TypeScript::create(Module::getBaseDir('typescript') . DIRECTORY_SEPARATOR . 'foomo-backbone.ts')
 			->generateDeclaration()
+			->addOutputFilter(
+				function($output) {
+					return str_replace('var Backbone;', '//var Backbone; <-- ie8 fix @microsoft(r)(tm) if anyone should not break it for IE8, that would be you!', $output);
+				}
+			)
 			->out($generatedJSFile = Module::getBaseDir('typescript') . DIRECTORY_SEPARATOR . 'foomo-backbone.js')
 			->compile()
 		;

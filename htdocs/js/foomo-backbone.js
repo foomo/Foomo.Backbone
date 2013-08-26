@@ -4,7 +4,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var Backbone;
+//var Backbone; <-- ie8 fix @microsoft(r)(tm) if anyone should not break it for IE8, that would be you!
 (function (Backbone) {
     (function (Components) {
         Components.mapToView = function (view, mappings) {
@@ -255,7 +255,7 @@ var Backbone;
     })(Backbone.Components || (Backbone.Components = {}));
     var Components = Backbone.Components;
 })(Backbone || (Backbone = {}));
-var Backbone;
+//var Backbone; <-- ie8 fix @microsoft(r)(tm) if anyone should not break it for IE8, that would be you!
 (function (Backbone) {
     (function (Components) {
         (function (Behaviours) {
@@ -491,7 +491,7 @@ var Backbone;
     })(Backbone.Components || (Backbone.Components = {}));
     var Components = Backbone.Components;
 })(Backbone || (Backbone = {}));
-var Backbone;
+//var Backbone; <-- ie8 fix @microsoft(r)(tm) if anyone should not break it for IE8, that would be you!
 (function (Backbone) {
     (function (Components) {
         (function (Controls) {
@@ -667,7 +667,7 @@ var Backbone;
     })(Backbone.Components || (Backbone.Components = {}));
     var Components = Backbone.Components;
 })(Backbone || (Backbone = {}));
-var Backbone;
+//var Backbone; <-- ie8 fix @microsoft(r)(tm) if anyone should not break it for IE8, that would be you!
 (function (Backbone) {
     (function (Components) {
         (function (Behaviours) {
