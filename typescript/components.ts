@@ -201,11 +201,17 @@ module Backbone {
 		 */
 		export class Display extends BaseComponent {
 			public filter = (value:any) => { return '' + value };
+			static makeComp() {
+				return new Display();
+			}
 			public static factory(element:JQuery, view:Backbone.View, filter?: (value:any) => string):Display {
+				return Display.componentFactory(Display, element, view, filter);
+			}
+			static componentFactory(componentClass:{makeComp:() => Display;}, element:JQuery, view:Backbone.View, filter?: (value:any) => string):Display {
 				var comp:Display;
 				var myInput = element;
 				if(myInput.length == 1) {
-					comp = new Display();
+					comp = componentClass.makeComp();
 					comp.id = element.prop('id');
 					comp.attribute = element.attr('data-model-attr');
 					comp.view = view;
@@ -242,6 +248,40 @@ module Backbone {
 					},
 					[]
 				);
+			}
+		}
+		/**
+		 * late static binding anyone ?!
+		 */
+		export class DisplayHTML extends Display {
+			static makeComp() {
+				return new DisplayHTML();
+			}
+			public static factory(element:JQuery, view:Backbone.View, filter?: (value:any) => string):Display {
+				return Display.componentFactory(DisplayHTML, element, view, filter);
+			}
+			public static map(selector:string) {
+				return new Mapping(
+					selector,
+					DisplayHTML.factory,
+					[]
+				);
+			}
+			public static mapWithFilter(selector:string, filter:(value:any) => string)
+			{
+				return new Mapping(
+					selector,
+					(element:JQuery, view:Backbone.View):Display => {
+						return Display.factory(element, view, filter);
+					},
+					[]
+				);
+			}
+			public setValue(value:string) {
+				this.$el.html(this.filter(value));
+			}
+			public getValue():string {
+				return this.$el.html();
 			}
 		}
 		export class ListItemListener {

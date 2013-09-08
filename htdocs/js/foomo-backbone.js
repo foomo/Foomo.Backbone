@@ -146,11 +146,17 @@ var __extends = this.__extends || function (d, b) {
                     return '' + value;
                 };
             }
+            Display.makeComp = function () {
+                return new Display();
+            };
             Display.factory = function (element, view, filter) {
+                return Display.componentFactory(Display, element, view, filter);
+            };
+            Display.componentFactory = function (componentClass, element, view, filter) {
                 var comp;
                 var myInput = element;
                 if (myInput.length == 1) {
-                    comp = new Display();
+                    comp = componentClass.makeComp();
                     comp.id = element.prop('id');
                     comp.attribute = element.attr('data-model-attr');
                     comp.view = view;
@@ -181,6 +187,35 @@ var __extends = this.__extends || function (d, b) {
             return Display;
         })(BaseComponent);
         Components.Display = Display;
+
+        var DisplayHTML = (function (_super) {
+            __extends(DisplayHTML, _super);
+            function DisplayHTML() {
+                _super.apply(this, arguments);
+            }
+            DisplayHTML.makeComp = function () {
+                return new DisplayHTML();
+            };
+            DisplayHTML.factory = function (element, view, filter) {
+                return Display.componentFactory(DisplayHTML, element, view, filter);
+            };
+            DisplayHTML.map = function (selector) {
+                return new Mapping(selector, DisplayHTML.factory, []);
+            };
+            DisplayHTML.mapWithFilter = function (selector, filter) {
+                return new Mapping(selector, function (element, view) {
+                    return Display.factory(element, view, filter);
+                }, []);
+            };
+            DisplayHTML.prototype.setValue = function (value) {
+                this.$el.html(this.filter(value));
+            };
+            DisplayHTML.prototype.getValue = function () {
+                return this.$el.html();
+            };
+            return DisplayHTML;
+        })(Display);
+        Components.DisplayHTML = DisplayHTML;
         var ListItemListener = (function () {
             function ListItemListener(event, handler, context) {
                 this.event = event;

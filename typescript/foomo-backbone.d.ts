@@ -39,12 +39,24 @@ declare module Backbone.Components {
     }
     class Display extends BaseComponent {
         public filter: (value: any) => string;
+        static makeComp(): Display;
         static factory(element: JQuery, view: Backbone.View, filter?: (value: any) => string): Display;
+        static componentFactory(componentClass: {
+            makeComp: () => Display;
+        }, element: JQuery, view: Backbone.View, filter?: (value: any) => string): Display;
         public setValue(value: string): void;
         public getValue(): string;
         public getOwnValue(): string;
         static map(selector: string): Mapping;
         static mapWithFilter(selector: string, filter: (value: any) => string): Mapping;
+    }
+    class DisplayHTML extends Display {
+        static makeComp(): DisplayHTML;
+        static factory(element: JQuery, view: Backbone.View, filter?: (value: any) => string): Display;
+        static map(selector: string): Mapping;
+        static mapWithFilter(selector: string, filter: (value: any) => string): Mapping;
+        public setValue(value: string): void;
+        public getValue(): string;
     }
     class ListItemListener {
         public event: string;
