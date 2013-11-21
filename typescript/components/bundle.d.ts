@@ -1,5 +1,5 @@
-/// <reference path="backbone.d.ts" />
-/// <reference path="underscore.d.ts" />
+/// <reference path='../backbone.d.ts' />
+/// <reference path='../underscore.d.ts' />
 declare module Backbone.Components {
     var mapToView: (view: Backbone.View, mappings: Mapping[]) => {};
     class EventBinding {
@@ -26,7 +26,10 @@ declare module Backbone.Components {
         public attribute: string;
         public bidirectionalBinding: boolean;
         public behaviours: Behaviour[];
-        private whenData;
+        public whenData: {
+            event: string;
+            model: Backbone.Model;
+        };
         public getValue(): any;
         public getOwnValue(): any;
         public setValue(value: any): void;
@@ -142,6 +145,28 @@ declare module Backbone.Components.Behaviours {
         static getFactory(event: string, callback: (data: any) => void): (component: Components.List) => ListItemEventHandler;
     }
 }
+declare module Backbone.Components.Behaviours.Validation.Validators {
+    class EmptyValidator extends Validation.BaseValidator {
+        static MESSAGES: {
+            OK: string;
+            MUST_NOT_BE_EMPTY: string;
+        };
+        static pack(...attributes: any[]);
+        static factory(): EmptyValidator;
+        public validate(model: Backbone.Model, attribute: string): Validation.Result;
+    }
+    class LengthValidator extends Validation.BaseValidator {
+        static MESSAGES: {
+            OK: string;
+            WRONG_LENGTH: string;
+        };
+        private minLength;
+        private maxLength;
+        static pack(minLength: number, maxLength: number, ...attributes: any[]);
+        static factory(minLength, maxLength): LengthValidator;
+        public validate(model: Backbone.Model, attribute: string): Validation.Result;
+    }
+}
 declare module Backbone.Components.Controls {
     class Input extends Components.BaseComponent {
         public element: JQuery;
@@ -176,25 +201,4 @@ declare module Backbone.Components.Controls {
         }
     }
 }
-declare module Backbone.Components.Behaviours.Validation.Validators {
-    class EmptyValidator extends Validation.BaseValidator {
-        static MESSAGES: {
-            OK: string;
-            MUST_NOT_BE_EMPTY: string;
-        };
-        static pack(...attributes: any[]);
-        static factory(): EmptyValidator;
-        public validate(model: Backbone.Model, attribute: string): Validation.Result;
-    }
-    class LengthValidator extends Validation.BaseValidator {
-        static MESSAGES: {
-            OK: string;
-            WRONG_LENGTH: string;
-        };
-        private minLength;
-        private maxLength;
-        static pack(minLength: number, maxLength: number, ...attributes: any[]);
-        static factory(minLength, maxLength): LengthValidator;
-        public validate(model: Backbone.Model, attribute: string): Validation.Result;
-    }
-}
+

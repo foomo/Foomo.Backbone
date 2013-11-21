@@ -19,36 +19,47 @@
 
 namespace Foomo\Backbone;
 
-use Foomo\JS\Bundle\Compiler;
-
+use Foomo\Config;
+use Foomo\JS\Bundle as JSBundle;
+use Foomo\TypeScript\Bundle as TypeScriptBundle;
 
 /**
  * @link www.foomo.org
  * @license www.gnu.org/licenses/lgpl.txt
  */
-class Builder
+class JSBundles
 {
-	public static function buildFoomoBackboneJS()
+	/**
+	 * underscore, jquery, backbone
+	 *
+	 * @return JSBundle
+	 */
+	public static function backbone($debug = null)
 	{
-		$devResult = Compiler::compile(
-			JSBundles::backboneComponents(true)
-		);
-		$debugFilename = Module::getHtdocsDir('js') . DIRECTORY_SEPARATOR . 'foomo-backbone.js';
-		if(file_exists($debugFilename)) {
-			unlink($debugFilename);
-		}
-		$fp = fopen($debugFilename, 'a');
-		foreach($devResult->jsFiles as $file) {
-			fwrite($fp, file_get_contents($file) . PHP_EOL);
-		}
-		$devResult = Compiler::compile(
-			JSBundles::backboneComponents(false)
-		);
-		file_put_contents(
-			Module::getHtdocsDir('js') . DIRECTORY_SEPARATOR . 'foomo-backbone.min.js',
-			file_get_contents($devResult->jsFiles[0])
-		);
-
+		$debug = self::getDebug($debug);
+		return JSBundle::create('backbone')
+			->debug($debug)
+			->addJavaScript(Module::getHtdocsDir('js') . DIRECTORY_SEPARATOR . 'foomo-backbone-dependencies.js')
+		;
 	}
 
+	public static function backboneComponents($debug = null)
+	{
+		$debug = self::getDebug($debug);
+		return TypeScriptBundle::create(
+				'foomo-backbone-components',
+				Module::getBaseDir('typescript') . DIRECTORY_SEPARATOR . 'components'
+			)
+			->debug($debug)
+			->writeTypeDefinition()
+			->merge(self::backbone($debug))
+		;
+	}
+	private static function getDebug($debug)
+	{
+		if(is_null($debug)) {
+			$debug = !Config::isProductionMode();
+		}
+		return $debug;
+	}
 }

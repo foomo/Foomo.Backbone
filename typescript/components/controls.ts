@@ -1,5 +1,3 @@
-///<reference path='./components.ts' />
-
 
 module Backbone.Components {
 	export module Controls {

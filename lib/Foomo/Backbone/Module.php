@@ -30,7 +30,7 @@ class Module extends \Foomo\Modules\ModuleBase
 	//---------------------------------------------------------------------------------------------
 	// ~ Constants
 	//---------------------------------------------------------------------------------------------
-	const VERSION = '0.2.2';
+	const VERSION = '0.3.0';
 	/**
 	 * the name of this module
 	 *
@@ -74,6 +74,7 @@ class Module extends \Foomo\Modules\ModuleBase
 		switch($target) {
 			case 'all':
 				Builder::buildFoomoBackboneJS();
+				$result->addEntry('foomo backbone js');
 				break;
 			default:
 				parent::make($target, $result);
