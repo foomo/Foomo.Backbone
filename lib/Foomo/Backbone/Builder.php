@@ -18,8 +18,9 @@
  */
 
 namespace Foomo\Backbone;
-use Foomo\Modules\MakeResult;
-use Foomo\TypeScript;
+
+use Foomo\JS\Bundle\Compiler;
+
 
 /**
  * @link www.foomo.org
@@ -29,6 +30,15 @@ class Builder
 {
 	public static function buildFoomoBackboneJS()
 	{
+		$devResult = Compiler::compile(
+			JSBundles::backboneComponents()
+				->debug(false)
+		);
+		file_put_contents(
+			Module::getHtdocsDir('js') . DIRECTORY_SEPARATOR . 'foomo-backbone.js',
+			file_get_contents($devResult->jsFiles[0])
+		);
+		/*
 		TypeScript::create(Module::getBaseDir('typescript') . DIRECTORY_SEPARATOR . 'foomo-backbone.ts')
 			->generateDeclaration()
 			->addOutputFilter(
@@ -43,39 +53,7 @@ class Builder
 			$generatedJSFile,
 			self::moveSourceMapToRightPlace($generatedJSFile)
 		);
-	}
-	private static function moveSourceMapToRightPlace($generatedJSFile)
-	{
-		$generatedSourceMapFile = $generatedJSFile . '.map';
-		$generatedSourceMapLocation = \Foomo\Backbone\Module::getHtdocsPath($targetMapName = 'js/foomo-backbone.js.map');
-		file_put_contents(
-			$file = \Foomo\Backbone\Module::getHtdocsDir() . DIRECTORY_SEPARATOR . $targetMapName,
-			$map = file_get_contents($generatedSourceMapFile)
-		);
-		unlink($generatedSourceMapFile);
-		return $generatedSourceMapLocation;
+		*/
 	}
 
-	private static function tweakAndWriteGeneratedJS($generatedJSFile, $generatedSourceMapLocation)
-	{
-		$targetJSFile = Module::getHtdocsDir('js') . DIRECTORY_SEPARATOR . 'foomo-backbone.js';
-
-		$newContents = self::setSourceMapLocation($generatedJSFile, $generatedSourceMapLocation);
-		$oldContents = null;
-
-		if(file_exists($targetJSFile)) {
-			$oldContents = file_get_contents($targetJSFile);
-		}
-		if($oldContents != $newContents) {
-			file_put_contents($targetJSFile, $newContents);
-		}
-		unlink($generatedJSFile);
-	}
-	private static function setSourceMapLocation($jsFilename, $sourceMapLocation)
-	{
-		$jsLines = explode(PHP_EOL, trim(file_get_contents($jsFilename)));
-		array_pop($jsLines);
-		$jsLines[] = '//# sourceMappingURL=' . $sourceMapLocation;
-		return implode(PHP_EOL, $jsLines);
-	}
 }

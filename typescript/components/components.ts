@@ -1,5 +1,3 @@
-///<reference path='./backbone.d.ts' />
-///<reference path='./underscore.d.ts' />
 
 module Backbone {
 	export module Components {
@@ -70,7 +68,7 @@ module Backbone {
 		 */
 		export class Behaviour {
 			constructor(public component:BaseComponent) {}
-		}
+        }
 
 
 		/**
@@ -84,7 +82,7 @@ module Backbone {
 
 			public behaviours:Behaviour[] = [];
 
-			private whenData:{
+			public whenData:{
 				event:string;
 				model:Backbone.Model;
 			};

@@ -1,6 +1,6 @@
 module Backbone.Components.Behaviours.Validation {
 	export module Validators {
-		export class EmptyValidator extends Validation.BaseValidator {
+		export class EmptyValidator extends Backbone.Components.Behaviours.Validation.BaseValidator {
 			public static MESSAGES = {
 				OK : 'ok',
 				MUST_NOT_BE_EMPTY: 'must not be empty'
@@ -23,7 +23,7 @@ module Backbone.Components.Behaviours.Validation {
 			}
 		}
 
-		export class LengthValidator extends Validation.BaseValidator {
+		export class LengthValidator extends Backbone.Components.Behaviours.Validation.BaseValidator {
             public static MESSAGES = {
                 OK : 'ok',
                 WRONG_LENGTH: 'wrong length'

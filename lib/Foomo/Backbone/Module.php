@@ -74,6 +74,7 @@ class Module extends \Foomo\Modules\ModuleBase
 		switch($target) {
 			case 'all':
 				Builder::buildFoomoBackboneJS();
+				$result->addEntry('foomo backbone js');
 				break;
 			default:
 				parent::make($target, $result);
