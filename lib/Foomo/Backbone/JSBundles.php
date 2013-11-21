@@ -19,6 +19,7 @@
 
 namespace Foomo\Backbone;
 
+use Foomo\Config;
 use Foomo\JS\Bundle as JSBundle;
 use Foomo\TypeScript\Bundle as TypeScriptBundle;
 
@@ -33,23 +34,32 @@ class JSBundles
 	 *
 	 * @return JSBundle
 	 */
-	public static function backbone()
+	public static function backbone($debug = null)
 	{
+		$debug = self::getDebug($debug);
 		return JSBundle::create('backbone')
-			->debug(true)
+			->debug($debug)
 			->addJavaScript(Module::getHtdocsDir('js') . DIRECTORY_SEPARATOR . 'foomo-backbone-dependencies.js')
 		;
 	}
 
-	public static function backboneComponents()
+	public static function backboneComponents($debug = null)
 	{
+		$debug = self::getDebug($debug);
 		return TypeScriptBundle::create(
 				'foomo-backbone-components',
 				Module::getBaseDir('typescript') . DIRECTORY_SEPARATOR . 'components'
 			)
-			->debug(true)
+			->debug($debug)
 			->writeTypeDefinition()
-			->merge(self::backbone())
+			->merge(self::backbone($debug))
 		;
+	}
+	private static function getDebug($debug)
+	{
+		if(is_null($debug)) {
+			$debug = !Config::isProductionMode();
+		}
+		return $debug;
 	}
 }

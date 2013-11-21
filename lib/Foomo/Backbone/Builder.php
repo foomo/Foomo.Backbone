@@ -31,29 +31,24 @@ class Builder
 	public static function buildFoomoBackboneJS()
 	{
 		$devResult = Compiler::compile(
-			JSBundles::backboneComponents()
-				->debug(false)
+			JSBundles::backboneComponents(true)
+		);
+		$debugFilename = Module::getHtdocsDir('js') . DIRECTORY_SEPARATOR . 'foomo-backbone.js';
+		if(file_exists($debugFilename)) {
+			unlink($debugFilename);
+		}
+		$fp = fopen($debugFilename, 'a');
+		foreach($devResult->jsFiles as $file) {
+			fwrite($fp, file_get_contents($file) . PHP_EOL);
+		}
+		$devResult = Compiler::compile(
+			JSBundles::backboneComponents(false)
 		);
 		file_put_contents(
-			Module::getHtdocsDir('js') . DIRECTORY_SEPARATOR . 'foomo-backbone.js',
+			Module::getHtdocsDir('js') . DIRECTORY_SEPARATOR . 'foomo-backbone.min.js',
 			file_get_contents($devResult->jsFiles[0])
 		);
-		/*
-		TypeScript::create(Module::getBaseDir('typescript') . DIRECTORY_SEPARATOR . 'foomo-backbone.ts')
-			->generateDeclaration()
-			->addOutputFilter(
-				function($output) {
-					return str_replace('var Backbone;', '//var Backbone; <-- ie8 fix @microsoft(r)(tm) if anyone should not break it for IE8, that would be you!', $output);
-				}
-			)
-			->out($generatedJSFile = Module::getBaseDir('typescript') . DIRECTORY_SEPARATOR . 'foomo-backbone.js')
-			->compile()
-		;
-		self::tweakAndWriteGeneratedJS(
-			$generatedJSFile,
-			self::moveSourceMapToRightPlace($generatedJSFile)
-		);
-		*/
+
 	}
 
 }
