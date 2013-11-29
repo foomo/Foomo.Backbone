@@ -19,7 +19,7 @@
 
 namespace Foomo\Backbone;
 
-use Foomo\JS\Bundle\Compiler;
+use Foomo\Bundle\Compiler;
 
 
 /**
@@ -38,15 +38,16 @@ class Builder
 			unlink($debugFilename);
 		}
 		$fp = fopen($debugFilename, 'a');
-		foreach($devResult->jsFiles as $file) {
-			fwrite($fp, file_get_contents($file) . PHP_EOL);
+		foreach($devResult->resources as $resource) {
+			fwrite($fp, file_get_contents($resource->file) . PHP_EOL);
 		}
+		fclose($fp);
 		$devResult = Compiler::compile(
 			JSBundles::backboneComponents(false)
 		);
 		file_put_contents(
 			Module::getHtdocsDir('js') . DIRECTORY_SEPARATOR . 'foomo-backbone.min.js',
-			file_get_contents($devResult->jsFiles[0])
+			file_get_contents($devResult->resources[0]->file)
 		);
 
 	}
