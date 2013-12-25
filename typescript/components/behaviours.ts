@@ -79,6 +79,29 @@ module Backbone.Components {
 				public static create(model:Backbone.Model, feedbackModel:FeedbackModel) {
 					return new Validator(model, feedbackModel);
 				}
+                public chainAndAbortAfterFirstInvalid(abort:boolean, ...packages:Package[]): boolean {
+                    var ret = true;
+                    var feedbackAttributes = {};
+                    var aborted = false;
+                    _.each(packages, (package:Package) => {
+                        var validator = package.validatorFactory();
+                        _.each(package.attributes, (attribute:string) => {
+                            if(!aborted) {
+                                var result:Result = validator.validate(this.model, attribute);
+                                if(!result.valid) {
+                                    ret = false;
+                                    aborted = true;
+                                }
+                                if(typeof feedbackAttributes[attribute] == 'undefined') {
+                                    feedbackAttributes[attribute] = [];
+                                }
+                                feedbackAttributes[attribute].push(new Feedback(result.message, result.level));
+                            }
+                        });
+                    });
+                    this.feedbackModel.set(feedbackAttributes);
+                    return ret;
+                }
 				public chain(...packages:Package[]):boolean {
 					var ret = true;
 					var feedbackAttributes = {};

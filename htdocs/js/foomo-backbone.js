@@ -12411,7 +12411,7 @@ var Backbone;
             var comps = {};
             _.each(mappings, function (mapping) {
                 view.$(mapping.selector).each(function (index, candidateEl) {
-                    var comp = mapping.factory($(candidateEl), view);
+                    var comp = mapping.factory(Backbone.$(candidateEl), view);
                     if (typeof comp == 'object') {
                         if (comp.id) {
                             comps[comp.id] = comp;
@@ -12778,6 +12778,34 @@ var Backbone;
                     Validator.create = function (model, feedbackModel) {
                         return new Validator(model, feedbackModel);
                     };
+                    Validator.prototype.chainAndAbortAfterFirstInvalid = function (abort) {
+                        var packages = [];
+                        for (var _i = 0; _i < (arguments.length - 1); _i++) {
+                            packages[_i] = arguments[_i + 1];
+                        }
+                        var _this = this;
+                        var ret = true;
+                        var feedbackAttributes = {};
+                        var aborted = false;
+                        _.each(packages, function (package) {
+                            var validator = package.validatorFactory();
+                            _.each(package.attributes, function (attribute) {
+                                if (!aborted) {
+                                    var result = validator.validate(_this.model, attribute);
+                                    if (!result.valid) {
+                                        ret = false;
+                                        aborted = true;
+                                    }
+                                    if (typeof feedbackAttributes[attribute] == 'undefined') {
+                                        feedbackAttributes[attribute] = [];
+                                    }
+                                    feedbackAttributes[attribute].push(new Behaviours.Feedback(result.message, result.level));
+                                }
+                            });
+                        });
+                        this.feedbackModel.set(feedbackAttributes);
+                        return ret;
+                    };
                     Validator.prototype.chain = function () {
                         var packages = [];
                         for (var _i = 0; _i < (arguments.length - 0); _i++) {
@@ -12842,8 +12870,8 @@ var Backbone;
                     this.feedbackElement = this.component.$('.' + ComponentFeedback.FEEDBACK_CLASS);
                     if (this.component.attribute && this.feedbackElement) {
                         if (this.feedbackElement.children().length == 1) {
-                            var firstChild = $(this.feedbackElement.children()[0]);
-                            this.template = $.trim(this.feedbackElement.html());
+                            var firstChild = Backbone.$(this.feedbackElement.children()[0]);
+                            this.template = Backbone.$.trim(this.feedbackElement.html());
                             this.feedbackElement.empty();
                         } else {
                             var tagName = 'div';
@@ -12886,7 +12914,7 @@ var Backbone;
                                 worstLevel = levelMap[entry.level];
                                 worstClass = entry.level;
                             }
-                            var feedbackElement = $(_this.template).removeClass(allLevelClasses).addClass(entry.level);
+                            var feedbackElement = Backbone.$(_this.template).removeClass(allLevelClasses).addClass(entry.level);
                             if (feedbackElement.children().length == 0) {
                                 feedbackElement.text(entry.message);
                             } else {
@@ -12910,7 +12938,7 @@ var Backbone;
                 __extends(ListItemEventHandler, _super);
                 function ListItemEventHandler(component, event, callback) {
                     _super.call(this, component);
-                    var listItemListener = new Components.ListItemListener(event, callback, this.component);
+                    var listItemListener = new Backbone.Components.ListItemListener(event, callback, this.component);
                     this.component.addListener(listItemListener);
                 }
                 ListItemEventHandler.getFactory = function (event, callback) {
@@ -12943,7 +12971,7 @@ var Backbone;
                                 attributes[_i] = arguments[_i + 0];
                             }
                             attributes.unshift(EmptyValidator.factory);
-                            return Components.Behaviours.Validation.pack.apply(null, attributes);
+                            return Backbone.Components.Behaviours.Validation.pack.apply(null, attributes);
                         };
                         EmptyValidator.factory = function () {
                             return new EmptyValidator();
@@ -12951,7 +12979,7 @@ var Backbone;
                         EmptyValidator.prototype.validate = function (model, attribute) {
                             var value = model.get(attribute);
                             var valid = typeof value == 'string' && value.length > 0;
-                            return new Behaviours.Validation.Result(valid, valid ? EmptyValidator.MESSAGES.OK : EmptyValidator.MESSAGES.MUST_NOT_BE_EMPTY, valid ? Components.Behaviours.Feedback.LEVEL_OK : Components.Behaviours.Feedback.LEVEL_ERROR);
+                            return new Backbone.Components.Behaviours.Validation.Result(valid, valid ? EmptyValidator.MESSAGES.OK : EmptyValidator.MESSAGES.MUST_NOT_BE_EMPTY, valid ? Backbone.Components.Behaviours.Feedback.LEVEL_OK : Backbone.Components.Behaviours.Feedback.LEVEL_ERROR);
                         };
                         EmptyValidator.MESSAGES = {
                             OK: 'ok',
@@ -12974,7 +13002,7 @@ var Backbone;
                             attributes.unshift(function () {
                                 return LengthValidator.factory(minLength, maxLength);
                             });
-                            return Components.Behaviours.Validation.pack.apply(null, attributes);
+                            return Backbone.Components.Behaviours.Validation.pack.apply(null, attributes);
                         };
                         LengthValidator.factory = function (minLength, maxLength) {
                             var validator = new LengthValidator();
@@ -12985,7 +13013,7 @@ var Backbone;
                         LengthValidator.prototype.validate = function (model, attribute) {
                             var value = model.get(attribute);
                             var valid = value && value.length >= this.minLength && value.length <= this.maxLength;
-                            return new Components.Behaviours.Validation.Result(valid, valid ? LengthValidator.MESSAGES.OK : LengthValidator.MESSAGES.WRONG_LENGTH, valid ? Components.Behaviours.Feedback.LEVEL_INFO : Components.Behaviours.Feedback.LEVEL_ERROR);
+                            return new Backbone.Components.Behaviours.Validation.Result(valid, valid ? LengthValidator.MESSAGES.OK : LengthValidator.MESSAGES.WRONG_LENGTH, valid ? Backbone.Components.Behaviours.Feedback.LEVEL_INFO : Backbone.Components.Behaviours.Feedback.LEVEL_ERROR);
                         };
                         LengthValidator.MESSAGES = {
                             OK: 'ok',
@@ -13028,7 +13056,7 @@ var Backbone;
                             case 'radio':
 
                             default:
-                                comp = new Input();
+                                comp = new Input;
                         }
                         comp.element = myInput;
                         comp.attribute = comp.element.prop('name');
@@ -13043,7 +13071,7 @@ var Backbone;
                 };
                 Input.map = function (selector, bindings) {
                     if (typeof bindings === "undefined") { bindings = []; }
-                    return new Components.Mapping(selector, Input.factory, bindings);
+                    return new Backbone.Components.Mapping(selector, Input.factory, bindings);
                 };
                 Input.prototype.setValue = function (value) {
                     this.element.val(value);
@@ -13100,7 +13128,7 @@ var Backbone;
                     var comp;
                     var selectElement = element.find('select');
                     if (selectElement.length == 1) {
-                        comp = new Select();
+                        comp = new Select;
                         comp.element = selectElement;
                         comp.attribute = comp.element.prop('name');
                         comp.id = element.prop('id');
@@ -13115,17 +13143,17 @@ var Backbone;
                 Select.loadOptions = function (model, component, optionsAttribute) {
                     component.element.find('option').remove();
                     _.each(model.get(optionsAttribute), function (option) {
-                        component.element.append($('<option></option>').val(option.value).text(option.label));
+                        component.element.append(Backbone.$('<option></option>').val(option.value).text(option.label));
                     });
                 };
 
                 Select.map = function (selector, bindings) {
                     if (typeof bindings === "undefined") { bindings = []; }
-                    return new Components.Mapping(selector, Select.factory, bindings);
+                    return new Backbone.Components.Mapping(selector, Select.factory, bindings);
                 };
 
                 Select.mapWithOptionsFrom = function (selector, optionsAttribute, optionsModel) {
-                    return new Components.Mapping(selector, Select.factory, [
+                    return new Backbone.Components.Mapping(selector, Select.factory, [
                         new Backbone.Components.EventBinding(optionsModel, 'change:' + optionsAttribute, function (model, component) {
                             var oldValue = component.getValue();
                             Select.loadOptions(model, component, optionsAttribute);
