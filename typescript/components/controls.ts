@@ -155,8 +155,21 @@ module Backbone.Components {
 							'change:' + optionsAttribute,
 							(model:Backbone.Model, component:Select) => {
 								var oldValue = component.getValue();
-								Select.loadOptions(model, component, optionsAttribute)
-								component.setValue(oldValue);
+								Select.loadOptions(model, component, optionsAttribute);
+                                var newOptions = model.get(optionsAttribute);
+                                var oldValueExists = false;
+                                _.each(newOptions,(option) => {
+                                    if(option.value == oldValue) {
+                                        oldValueExists = true;
+                                    }
+                                });
+                                if(oldValueExists) {
+								    component.setValue(oldValue);
+                                } else {
+                                    if(newOptions.length > 0) {
+                                        component.setValue(newOptions[0].value);
+                                    }
+                                }
 							}
 						)
 					]
