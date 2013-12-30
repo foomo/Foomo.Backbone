@@ -79,14 +79,14 @@ module Backbone.Components {
 				public static create(model:Backbone.Model, feedbackModel:FeedbackModel) {
 					return new Validator(model, feedbackModel);
 				}
-                public chainAndAbortAfterFirstInvalid(...packages:Package[]): boolean {
+                private chainAndMaybeAbort(abort:boolean, packages:Package[]): boolean {
                     var ret = true;
                     var feedbackAttributes = {};
                     var aborted = false;
                     _.each(packages, (package:Package) => {
                         var validator = package.validatorFactory();
                         _.each(package.attributes, (attribute:string) => {
-                            if(!aborted) {
+                            if(!abort || abort && !aborted) {
                                 var result:Result = validator.validate(this.model, attribute);
                                 if(!result.valid) {
                                     ret = false;
@@ -102,24 +102,11 @@ module Backbone.Components {
                     this.feedbackModel.set(feedbackAttributes);
                     return ret;
                 }
+                public chainAndAbortAfterFirstInvalid(...packages:Package[]): boolean {
+                    return this.chainAndMaybeAbort(true, packages);
+                }
 				public chain(...packages:Package[]):boolean {
-					var ret = true;
-					var feedbackAttributes = {};
-					_.each(packages, (package:Package) => {
-						var validator = package.validatorFactory();
-						_.each(package.attributes, (attribute:string) => {
-							var result:Result = validator.validate(this.model, attribute);
-							if(!result.valid) {
-								ret = false;
-							}
-							if(typeof feedbackAttributes[attribute] == 'undefined') {
-								feedbackAttributes[attribute] = [];
-							}
-							feedbackAttributes[attribute].push(new Feedback(result.message, result.level));
-						});
-					});
-					this.feedbackModel.set(feedbackAttributes);
-					return ret;
+                    return this.chainAndMaybeAbort(false, packages);
 				}
 			}
 		}

@@ -122,6 +122,7 @@ declare module Backbone.Components {
                 public feedbackModel: FeedbackModel;
                 constructor(model: Backbone.Model, feedbackModel: FeedbackModel);
                 static create(model: Backbone.Model, feedbackModel: FeedbackModel): Validator;
+                private chainAndMaybeAbort(abort, packages);
                 public chainAndAbortAfterFirstInvalid(...packages: Package[]): boolean;
                 public chain(...packages: Package[]): boolean;
             }
