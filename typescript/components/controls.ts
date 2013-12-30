@@ -1,19 +1,22 @@
 
 module Backbone.Components {
 	export module Controls {
-
 		/**
-		 * a simple input
+		 * a simple input or textarea
 		 */
 		export class Input extends Backbone.Components.BaseComponent {
 			public element:JQuery;
 			public static factory(element:JQuery, view:Backbone.View):Input {
 				var comp:Input;
 				var myInput;
-				if(element.prop('tagName') == 'INPUT') {
+                var tagName = element.prop('tagName');
+				if(tagName == 'INPUT' || tagName == 'TEXTAREA') {
 					myInput = element;
 				} else {
 					myInput = element.find('input');
+                    if(myInput.length === 0) {
+                        myInput = element.find('TEXTAREA');
+                    }
 				}
 				if(myInput.length == 1) {
 					switch(myInput.prop('type')) {
@@ -195,7 +198,8 @@ module Backbone.Components {
 				constructor(component:Controls.Input) {
 					super(component);
 					var compType = component.element.prop('type');
-					if(component.element && component.element.prop('tagName') == 'INPUT' && (compType == 'text' || compType == 'password')) {
+                    var tagName = component.element.prop('tagName');
+					if(component.element && (tagName == 'INPUT' && (compType == 'text' || compType == 'password')) || tagName == 'TEXTAREA') {
 						component.element.keyup((event) => {
 							component.handleChange(component.getValue());
 						});

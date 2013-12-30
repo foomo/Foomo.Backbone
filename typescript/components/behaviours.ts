@@ -79,7 +79,7 @@ module Backbone.Components {
 				public static create(model:Backbone.Model, feedbackModel:FeedbackModel) {
 					return new Validator(model, feedbackModel);
 				}
-                public chainAndAbortAfterFirstInvalid(abort:boolean, ...packages:Package[]): boolean {
+                public chainAndAbortAfterFirstInvalid(...packages:Package[]): boolean {
                     var ret = true;
                     var feedbackAttributes = {};
                     var aborted = false;
