@@ -13027,11 +13027,7 @@ var Backbone;
                     Validator.create = function (model, feedbackModel) {
                         return new Validator(model, feedbackModel);
                     };
-                    Validator.prototype.chainAndAbortAfterFirstInvalid = function (abort) {
-                        var packages = [];
-                        for (var _i = 0; _i < (arguments.length - 1); _i++) {
-                            packages[_i] = arguments[_i + 1];
-                        }
+                    Validator.prototype.chainAndMaybeAbort = function (abort, packages) {
                         var _this = this;
                         var ret = true;
                         var feedbackAttributes = {};
@@ -13039,7 +13035,7 @@ var Backbone;
                         _.each(packages, function (package) {
                             var validator = package.validatorFactory();
                             _.each(package.attributes, function (attribute) {
-                                if (!aborted) {
+                                if (!abort || abort && !aborted) {
                                     var result = validator.validate(_this.model, attribute);
                                     if (!result.valid) {
                                         ret = false;
@@ -13055,29 +13051,19 @@ var Backbone;
                         this.feedbackModel.set(feedbackAttributes);
                         return ret;
                     };
+                    Validator.prototype.chainAndAbortAfterFirstInvalid = function () {
+                        var packages = [];
+                        for (var _i = 0; _i < (arguments.length - 0); _i++) {
+                            packages[_i] = arguments[_i + 0];
+                        }
+                        return this.chainAndMaybeAbort(true, packages);
+                    };
                     Validator.prototype.chain = function () {
                         var packages = [];
                         for (var _i = 0; _i < (arguments.length - 0); _i++) {
                             packages[_i] = arguments[_i + 0];
                         }
-                        var _this = this;
-                        var ret = true;
-                        var feedbackAttributes = {};
-                        _.each(packages, function (package) {
-                            var validator = package.validatorFactory();
-                            _.each(package.attributes, function (attribute) {
-                                var result = validator.validate(_this.model, attribute);
-                                if (!result.valid) {
-                                    ret = false;
-                                }
-                                if (typeof feedbackAttributes[attribute] == 'undefined') {
-                                    feedbackAttributes[attribute] = [];
-                                }
-                                feedbackAttributes[attribute].push(new Behaviours.Feedback(result.message, result.level));
-                            });
-                        });
-                        this.feedbackModel.set(feedbackAttributes);
-                        return ret;
+                        return this.chainAndMaybeAbort(false, packages);
                     };
                     return Validator;
                 })();
@@ -13292,10 +13278,14 @@ var Backbone;
                 Input.factory = function (element, view) {
                     var comp;
                     var myInput;
-                    if (element.prop('tagName') == 'INPUT') {
+                    var tagName = element.prop('tagName');
+                    if (tagName == 'INPUT' || tagName == 'TEXTAREA') {
                         myInput = element;
                     } else {
                         myInput = element.find('input');
+                        if (myInput.length === 0) {
+                            myInput = element.find('TEXTAREA');
+                        }
                     }
                     if (myInput.length == 1) {
                         switch (myInput.prop('type')) {
@@ -13406,7 +13396,20 @@ var Backbone;
                         new Backbone.Components.EventBinding(optionsModel, 'change:' + optionsAttribute, function (model, component) {
                             var oldValue = component.getValue();
                             Select.loadOptions(model, component, optionsAttribute);
-                            component.setValue(oldValue);
+                            var newOptions = model.get(optionsAttribute);
+                            var oldValueExists = false;
+                            _.each(newOptions, function (option) {
+                                if (option.value == oldValue) {
+                                    oldValueExists = true;
+                                }
+                            });
+                            if (oldValueExists) {
+                                component.setValue(oldValue);
+                            } else {
+                                if (newOptions.length > 0) {
+                                    component.setValue(newOptions[0].value);
+                                }
+                            }
                         })
                     ]);
                 };
@@ -13430,7 +13433,8 @@ var Backbone;
                     function TypeToChange(component) {
                         _super.call(this, component);
                         var compType = component.element.prop('type');
-                        if (component.element && component.element.prop('tagName') == 'INPUT' && (compType == 'text' || compType == 'password')) {
+                        var tagName = component.element.prop('tagName');
+                        if (component.element && (tagName == 'INPUT' && (compType == 'text' || compType == 'password')) || tagName == 'TEXTAREA') {
                             component.element.keyup(function (event) {
                                 component.handleChange(component.getValue());
                             });
