@@ -13460,5 +13460,6 @@ var Backbone;
     })(Backbone.Components || (Backbone.Components = {}));
     var Components = Backbone.Components;
 })(Backbone || (Backbone = {}));
+"ts file must not be empty to prevent invalid source maps - see https://typescript.codeplex.com/workitem/2132";
 //# sourceMappingURL=foomo-backbone-components-b740d0ab9c44ac7a465b2f6f31e19301.js.map
 

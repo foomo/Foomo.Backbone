@@ -12,3 +12,6 @@
 
 
 
+
+
+"ts file must not be empty to prevent invalid source maps - see https://typescript.codeplex.com/workitem/2132";

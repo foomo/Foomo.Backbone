@@ -1,3 +1,4 @@
 .*
 !.git*
-
+/htdocs/js/foomo-backbone.js
+/htdocs/js/foomo-backbone.min.js
