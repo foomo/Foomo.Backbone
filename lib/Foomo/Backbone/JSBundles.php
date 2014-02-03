@@ -50,6 +50,9 @@ class JSBundles
 				'foomo-backbone-components',
 				Module::getBaseDir('typescript') . DIRECTORY_SEPARATOR . 'components'
 			)
+			->addOutputFilter(function($js) {
+				return str_replace('var Backbone;', '// var Backbone;', $js);
+			})
 			->debug($debug)
 			->writeTypeDefinition()
 			->merge(self::backbone($debug))
