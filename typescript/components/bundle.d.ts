@@ -1,20 +1,28 @@
 /// <reference path='../backbone.d.ts' />
 /// <reference path='../underscore.d.ts' />
+declare module Backbone.Components {
+    class BundleLoader {
+        static load(bundle: any, callback: (bundle: any) => void): void;
+    }
+}
 declare module Backbone {
     module Components {
-        var mapToView: (view: Backbone.View, mappings: Mapping[]) => {};
+        var mapToView: (view: Backbone.View, mappings: Mapping[], verbose?: boolean) => {};
         class EventBinding {
             public model: Backbone.Model;
             public event: string;
             public handler: (model: Backbone.Model, component: BaseComponent) => void;
             constructor(model: Backbone.Model, event: string, handler: (model: Backbone.Model, component: BaseComponent) => void);
+            public toString(): string;
         }
         class Mapping {
             public selector: string;
             public factory: (element: JQuery, view: Backbone.View) => BaseComponent;
             public eventBindings: EventBinding[];
             public behaviours: any[];
-            constructor(selector: string, factory: (element: JQuery, view: Backbone.View) => BaseComponent, eventBindings: EventBinding[], behaviours?: any[]);
+            public description: string;
+            constructor(selector: string, factory: (element: JQuery, view: Backbone.View) => BaseComponent, eventBindings: EventBinding[], behaviours?: any[], description?: string);
+            public toString(): string;
             public addBehaviour(behaviourFactory: (component: BaseComponent) => Behaviour): Mapping;
         }
         class Behaviour {
@@ -31,6 +39,7 @@ declare module Backbone {
                 event: string;
                 model: Backbone.Model;
             };
+            public toString(): string;
             public getValue(): any;
             public getOwnValue(): any;
             public setValue(value: any): void;

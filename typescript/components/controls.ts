@@ -24,7 +24,6 @@ module Backbone.Components {
 							comp = new Checkbox();
 							break;
 						case 'radio':
-
 						default:
 							comp = new Input;
 					}
@@ -43,7 +42,9 @@ module Backbone.Components {
 				return new Mapping(
 					selector,
 					Input.factory,
-					bindings
+					bindings,
+                    [],
+                    "Input component mapper"
 				);
 			}
 			public setValue(value:any)
@@ -137,7 +138,9 @@ module Backbone.Components {
 				return new Mapping(
 					selector,
 					Select.factory,
-					bindings
+					bindings,
+                    [],
+                    "Select component mapper"
 				);
 			}
 

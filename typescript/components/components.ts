@@ -1,26 +1,38 @@
 
 module Backbone {
 	export module Components {
-		export var mapToView = (view:Backbone.View, mappings:Mapping[]) => {
+		export var mapToView = (view:Backbone.View, mappings:Mapping[], verbose:boolean = false) => {
 			var comps = {};
 			_.each(mappings, (mapping:Mapping) => {
-				view.$(mapping.selector).each((index, candidateEl) => {
-					var comp:BaseComponent = mapping.factory($(candidateEl), view);
-					if(typeof comp == 'object') {
-						if(comp.id) {
-							comps[comp.id] = comp;
-						}
-						if(comp.attribute) {
-							comp.bindModel(view.model, comp.attribute);
-						}
-						_.each(mapping.eventBindings, function(eventBinding:Backbone.Components.EventBinding) {
-							comp.attachBinding(eventBinding);
-						});
-						_.each(mapping.behaviours, function(behaviourFactory:(component:BaseComponent) => Behaviour) {
-							comp.attachBehaviour(behaviourFactory);
-						});
-					}
-				});
+                var elements = view.$(mapping.selector);
+                if(elements.length > 0) {
+                    elements.each((index, candidateEl) => {
+                        var comp:BaseComponent = mapping.factory($(candidateEl), view);
+                        if(typeof comp == 'object') {
+                            if(comp.id) {
+                                comps[comp.id] = comp;
+                            }
+                            if(comp.attribute) {
+                                comp.bindModel(view.model, comp.attribute);
+                            }
+                            _.each(mapping.eventBindings, function(eventBinding:Backbone.Components.EventBinding) {
+                                comp.attachBinding(eventBinding);
+                            });
+                            _.each(mapping.behaviours, function(behaviourFactory:(component:BaseComponent) => Behaviour) {
+                                comp.attachBehaviour(behaviourFactory);
+                            });
+                        }
+                        if(verbose) {
+                            if(comp) {
+                                console.log('mapped ' + comp, ' on ', candidateEl);//mapping.getDescription()selector, comp['constructor'].name, comp.$el );
+                            } else {
+                                console.log('selector ' + mapping.selector + ' could not be mapped with ' + mapping + ' on', candidateEl);
+                            }
+                        }
+                    });
+                } else if(verbose) {
+                    console.log('selector "' + mapping.selector + '" did not match any elements');
+                }
 			});
 			return comps;
 		};
@@ -34,7 +46,11 @@ module Backbone {
 				public event: string,
 				public handler: (model:Backbone.Model, component:BaseComponent) => void
 			) {
+
 			}
+            public toString() {
+                return 'EventBinding for "' + this.event + '" on model ' + this.model;
+            }
 		}
 
 		/**
@@ -47,11 +63,18 @@ module Backbone {
 				public factory: (element:JQuery, view:Backbone.View) => BaseComponent,
 				public eventBindings:Backbone.Components.EventBinding[],
 				// dear typescript i want an array of closures
-				public behaviours:any[] = []
+				public behaviours:any[] = [],
+                public description = ''
 			) {
 
 			}
-
+            toString() {
+                var str = this.description;
+                _.each(this.eventBindings, (binding:Backbone.Components.EventBinding) => {
+                    str += ' ' + binding.toString();
+                });
+                return str;
+            }
 			/**
 			 * add another behaviour / its factory
 			 * @param behaviourFactory
@@ -86,6 +109,17 @@ module Backbone {
 				event:string;
 				model:Backbone.Model;
 			};
+            public toString() {
+                var path = [];
+                var parent = this.$el;
+                while(parent.length > 0 && parent[0] !== this.view.$el[0]) {
+                    var id = parent.prop('id');
+                    var classes = parent.prop('class').split(' ').join('.');
+                    path.push(parent.prop('tagName').toLowerCase() + (id.length > 0?'#'+id:'') + (classes.length>0?'.' + classes:''));
+                    parent = parent.parent();
+                }
+                return this['constructor'].name + ' => ' + this.attribute + ' : ' + path.reverse().join(' ');
+            }
 			/**
 			 * implement this in your component
 			 */
@@ -234,7 +268,9 @@ module Backbone {
 				return new Mapping(
 					selector,
 					Display.factory,
-					[]
+					[],
+                    [],
+                    "Display component mapper"
 				);
 			}
 			public static mapWithFilter(selector:string, filter:(value:any) => string)
@@ -262,7 +298,9 @@ module Backbone {
 				return new Mapping(
 					selector,
 					DisplayHTML.factory,
-					[]
+					[],
+                    [],
+                    "DisplayHTML component mapper"
 				);
 			}
 			public static mapWithFilter(selector:string, filter:(value:any) => string)
@@ -316,7 +354,9 @@ module Backbone {
 					(element:JQuery, view:Backbone.View):List => {
 						return List.factory(element, view, viewClass, attribute);
 					},
-					[]
+					[],
+                    [],
+                    'List component mapper for attribute "' + attribute + '"'
 				);
 			}
 			public getValue() {
@@ -350,7 +390,7 @@ module Backbone {
 			}
 
 			/**
-			 * the listeners will be actually attached, the next time the items are rerendered
+			 * the listeners will be actually attached, the next time the items are re-rendered
 			 * @param listener
 			 */
 			public addListener(listener:ListItemListener) {

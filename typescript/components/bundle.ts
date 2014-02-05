@@ -3,6 +3,7 @@
 ///<reference path='../backbone.d.ts' />
 ///<reference path='../underscore.d.ts' />
 
+/// <reference path='bundleLoader.ts' />
 /// <reference path='components.ts' />
 /// <reference path='behaviours.ts' />
 /// <reference path='validators.ts' />
@@ -13,3 +14,5 @@
 
 
 
+
+"ts file must not be empty to prevent invalid source maps - see https://typescript.codeplex.com/workitem/2132";
