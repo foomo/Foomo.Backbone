@@ -103,6 +103,9 @@ module Backbone.Components {
 			public static factory(element:JQuery, view:Backbone.View):Select {
 				var comp:Select;
 				var selectElement = element.find('select');
+				if(selectElement.length == 0 && element.prop("tagName") == 'SELECT') {
+                    selectElement = element;
+                }
 				if(selectElement.length == 1) {
 					comp = new Select;
 					comp.element = selectElement;
@@ -113,18 +116,26 @@ module Backbone.Components {
 					comp.element.on('change', () => {
 						comp.handleChange(comp.getValue());
 					});
-				}
+                }
 				return comp;
 			}
 			private static loadOptions(model:Backbone.Model, component:Select, optionsAttribute:string)
 			{
 				component.element.find('option').remove();
 				_.each(model.get(optionsAttribute), (option) => {
-					component.element.append(
-						$('<option></option>')
-							.val(option.value)
-							.text(option.label)
-					);
+                    var optionEl = $('<option></option>');
+                    if("object" == typeof option && option.hasOwnProperty("value") && option.hasOwnProperty("label")) {
+                        optionEl
+                            .val(option.value)
+                            .text(option.label)
+                        ;
+                    } else {
+                        optionEl
+                            .val(option)
+                            .text(option)
+                        ;
+                    }
+                    component.element.append(optionEl);
 				});
 			}
 
