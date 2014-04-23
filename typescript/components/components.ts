@@ -118,7 +118,14 @@ module Backbone {
                     path.push(parent.prop('tagName').toLowerCase() + (id.length > 0?'#'+id:'') + (classes.length>0?'.' + classes:''));
                     parent = parent.parent();
                 }
-                return this['constructor'].name + ' => ' + this.attribute + ' : ' + path.reverse().join(' ');
+                var constructor:any = this['constructor'];
+                var ret;
+                if(constructor.hasOwnProperty('name')) {
+                    ret = constructor.name;
+                } else {
+                    ret = '' + constructor;
+                }
+                return ret + ' => ' + this.attribute + ' : ' + path.reverse().join(' ');
             }
 			/**
 			 * implement this in your component
