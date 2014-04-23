@@ -315,7 +315,7 @@ module Backbone {
 				return new Mapping(
 					selector,
 					(element:JQuery, view:Backbone.View):Display => {
-						return Display.factory(element, view, filter);
+						return DisplayHTML.factory(element, view, filter);
 					},
 					[]
 				);
