@@ -202,8 +202,19 @@ module Backbone {
 			 */
 			public bindModel(model:Backbone.Model, attribute:string)
 			{
-				model.on('change:' + attribute, (model) => {
-					var modelValue = model.get(attribute);
+                var attributePath = attribute.split('.');
+				model.on('change:' + attributePath[0], (model) => {
+					var modelValue = model.get(attributePath[0]);
+                    if(attributePath.length > 1) {
+                        for(var i = 1; i < attributePath.length; i ++) {
+                            if(modelValue.hasOwnProperty(attributePath[i])) {
+                                modelValue = modelValue[attributePath[i]];
+                            } else {
+                                modelValue = undefined;
+                                break;
+                            }
+                        }
+                    }
 					if(this.getOwnValue() != modelValue) {
 						this.setValue(modelValue);
 					}
