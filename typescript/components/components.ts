@@ -205,7 +205,7 @@ module Backbone {
                 var attributePath = attribute.split('.');
 				model.on('change:' + attributePath[0], (model) => {
 					var modelValue = model.get(attributePath[0]);
-                    if(attributePath.length > 1) {
+                    if(attributePath.length > 1 && modelValue !== null && modelValue !== undefined) {
                         for(var i = 1; i < attributePath.length; i ++) {
                             if(modelValue.hasOwnProperty(attributePath[i])) {
                                 modelValue = modelValue[attributePath[i]];
