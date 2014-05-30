@@ -2,6 +2,7 @@
 /// <reference path='../underscore.d.ts' />
 declare module Backbone.Components {
     class BundleLoader {
+        private static sanitizePathname(pathname);
         static load(bundle: any, callback: (bundle: any) => void): void;
     }
 }
