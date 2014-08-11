@@ -37,9 +37,14 @@ class JSBundles
 	public static function backbone($debug = null)
 	{
 		$debug = self::getDebug($debug);
+		$jsRoot = Module::getBaseDir('js') . DIRECTORY_SEPARATOR;
 		return JSBundle::create('backbone')
 			->debug($debug)
-			->addJavaScript(Module::getHtdocsDir('js') . DIRECTORY_SEPARATOR . 'foomo-backbone-dependencies.js')
+			->addJavaScripts(array(
+				$jsRoot . 'underscore.js',
+				$jsRoot . 'jquery.js',
+				$jsRoot . 'backbone.js'
+			))
 		;
 	}
 

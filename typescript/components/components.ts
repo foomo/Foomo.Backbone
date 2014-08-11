@@ -1,7 +1,7 @@
 
 module Backbone {
 	export module Components {
-		export var mapToView = (view:Backbone.View, mappings:Mapping[], verbose:boolean = false) => {
+		export var mapToView = (view:Backbone.View<Backbone.Model>, mappings:Mapping[], verbose:boolean = false) => {
 			var comps = {};
 			_.each(mappings, (mapping:Mapping) => {
                 var elements = view.$(mapping.selector);
@@ -60,7 +60,7 @@ module Backbone {
 		export class Mapping {
 			constructor(
 				public selector:string,
-				public factory: (element:JQuery, view:Backbone.View) => BaseComponent,
+				public factory: (element:JQuery, view:Backbone.View<Backbone.Model>) => BaseComponent,
 				public eventBindings:Backbone.Components.EventBinding[],
 				// dear typescript i want an array of closures
 				public behaviours:any[] = [],
@@ -97,8 +97,8 @@ module Backbone {
 		/**
 		 * the mother of all components
 		 */
-		export class BaseComponent extends Backbone.View {
-			public view:Backbone.View;
+		export class BaseComponent extends Backbone.View<Backbone.Model> {
+			public view:Backbone.View<Backbone.Model>;
 			public id:string;
 			public attribute:string;
 			public bidirectionalBinding:boolean = true;
@@ -254,10 +254,10 @@ module Backbone {
 			static makeComp() {
 				return new Display();
 			}
-			public static factory(element:JQuery, view:Backbone.View, filter?: (value:any) => string):Display {
+			public static factory(element:JQuery, view:Backbone.View<Backbone.Model>, filter?: (value:any) => string):Display {
 				return Display.componentFactory(Display, element, view, filter);
 			}
-			static componentFactory(componentClass:{makeComp:() => Display;}, element:JQuery, view:Backbone.View, filter?: (value:any) => string):Display {
+			static componentFactory(componentClass:{makeComp:() => Display;}, element:JQuery, view:Backbone.View<Backbone.Model>, filter?: (value:any) => string):Display {
 				var comp:Display;
 				var myInput = element;
 				if(myInput.length == 1) {
@@ -295,7 +295,7 @@ module Backbone {
 			{
 				return new Mapping(
 					selector,
-					(element:JQuery, view:Backbone.View):Display => {
+					(element:JQuery, view:Backbone.View<Backbone.Model>):Display => {
 						return Display.factory(element, view, filter);
 					},
 					[]
@@ -309,7 +309,7 @@ module Backbone {
 			static makeComp() {
 				return new DisplayHTML();
 			}
-			public static factory(element:JQuery, view:Backbone.View, filter?: (value:any) => string):Display {
+			public static factory(element:JQuery, view:Backbone.View<Backbone.Model>, filter?: (value:any) => string):Display {
 				return Display.componentFactory(DisplayHTML, element, view, filter);
 			}
 			public static map(selector:string) {
@@ -325,7 +325,7 @@ module Backbone {
 			{
 				return new Mapping(
 					selector,
-					(element:JQuery, view:Backbone.View):Display => {
+					(element:JQuery, view:Backbone.View<Backbone.Model>):Display => {
 						return DisplayHTML.factory(element, view, filter);
 					},
 					[]
@@ -341,7 +341,7 @@ module Backbone {
 		export class ListItemListener {
 			constructor(
 				public event:string,
-				public handler: (item:Backbone.View, event:any) => void,
+				public handler: (item:Backbone.View<Backbone.Model>, event:any) => void,
 				public context:any
 			) {
 
@@ -353,7 +353,7 @@ module Backbone {
 			private itemListeners:ListItemListener[] = [];
 			public itemViews = [];
 			private ownValue:any[];
-			public static factory(element:JQuery, view:Backbone.View, viewClass:any, attribute:string = ''):List {
+			public static factory(element:JQuery, view:Backbone.View<Backbone.Model>, viewClass:any, attribute:string = ''):List {
 				var comp = new List();
 				comp.view = view;
 				comp.element = element;
@@ -369,7 +369,7 @@ module Backbone {
 			public static map(selector:string,viewClass:any, attribute:string = ''):Mapping {
 				return new Mapping(
 					selector,
-					(element:JQuery, view:Backbone.View):List => {
+					(element:JQuery, view:Backbone.View<Backbone.Model>):List => {
 						return List.factory(element, view, viewClass, attribute);
 					},
 					[],

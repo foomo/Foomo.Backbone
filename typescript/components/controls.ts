@@ -6,7 +6,7 @@ module Backbone.Components {
 		 */
 		export class Input extends Backbone.Components.BaseComponent {
 			public element:JQuery;
-			public static factory(element:JQuery, view:Backbone.View):Input {
+			public static factory(element:JQuery, view:Backbone.View<Backbone.Model>):Input {
 				var comp:Input;
 				var myInput;
                 var tagName = element.prop('tagName');
@@ -100,7 +100,7 @@ module Backbone.Components {
 		export class Select extends Backbone.Components.BaseComponent {
 			public element:JQuery;
 			public options:any = {};
-			public static factory(element:JQuery, view:Backbone.View):Select {
+			public static factory(element:JQuery, view:Backbone.View<Backbone.Model>):Select {
 				var comp:Select;
 				var selectElement = element.find('select');
 				if(selectElement.length == 0 && element.prop("tagName") == 'SELECT') {

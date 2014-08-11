@@ -30,6 +30,7 @@ class Builder
 {
 	public static function buildFoomoBackboneJS()
 	{
+
 		$devResult = Compiler::compile(
 			JSBundles::backboneComponents(true)
 		);
