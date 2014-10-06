@@ -122,7 +122,7 @@ module Backbone.Components {
 			private static loadOptions(model:Backbone.Model, component:Select, optionsAttribute:string)
 			{
 				component.element.find('option').remove();
-				_.each(model.get(optionsAttribute), (option) => {
+				_.each<any>(model.get(optionsAttribute), (option) => {
                     var optionEl = $('<option></option>');
                     if("object" == typeof option && option.hasOwnProperty("value") && option.hasOwnProperty("label")) {
                         optionEl
@@ -175,7 +175,7 @@ module Backbone.Components {
 								Select.loadOptions(model, component, optionsAttribute);
                                 var newOptions = model.get(optionsAttribute);
                                 var oldValueExists = false;
-                                _.each(newOptions,(option) => {
+                                _.each<{value:string;}>(newOptions,(option) => {
                                     if(option.value == oldValue) {
                                         oldValueExists = true;
                                     }

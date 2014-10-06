@@ -24,9 +24,11 @@ module Backbone.Components {
                     }
                 }
             });
-            _.each(bundle.styleSheets, function(styleSheet) {
+            _.each<string>(bundle.styleSheets, function(styleSheet) {
                 if(_.indexOf(loadedStyleSheets, styleSheet) == -1) {
-                    $('head').append($('<link rel="stylesheet" type="text/css">').prop("href", styleSheet));
+                    $('head').append(
+						$('<link rel="stylesheet" type="text/css">').prop("href", styleSheet)
+					);
                 }
             });
 
