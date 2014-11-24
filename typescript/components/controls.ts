@@ -145,7 +145,7 @@ module Backbone.Components {
 			 * @param bindings
 			 * @returns {Backbone.Components.Mapping}
 			 */
-			public static map(selector, bindings:Backbone.Components.EventBinding[] = []) {
+			public static map(selector:any, bindings:Backbone.Components.EventBinding[] = []) {
 				return new Mapping(
 					selector,
 					Select.factory,
@@ -162,7 +162,7 @@ module Backbone.Components {
 			 * @param optionsAttribute
 			 * @returns {Backbone.Components.Mapping}
 			 */
-			public static mapWithOptionsFrom(selector:string, optionsAttribute:string, optionsModel:Backbone.Model) {
+			public static mapWithOptionsFrom(selector:any, optionsAttribute:string, optionsModel:Backbone.Model) {
 				return new Mapping(
 					selector,
 					Select.factory,

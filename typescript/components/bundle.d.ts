@@ -17,12 +17,12 @@ declare module Backbone {
             toString(): string;
         }
         class Mapping {
-            selector: string;
+            selector: any;
             factory: (element: JQuery, view: View<Model>) => BaseComponent;
             eventBindings: EventBinding[];
             behaviours: any[];
             description: string;
-            constructor(selector: string, factory: (element: JQuery, view: View<Model>) => BaseComponent, eventBindings: EventBinding[], behaviours?: any[], description?: string);
+            constructor(selector: any, factory: (element: JQuery, view: View<Model>) => BaseComponent, eventBindings: EventBinding[], behaviours?: any[], description?: string);
             toString(): string;
             addBehaviour(behaviourFactory: (component: BaseComponent) => Behaviour): Mapping;
         }
@@ -61,14 +61,14 @@ declare module Backbone {
             setValue(value: string): void;
             getValue(): string;
             getOwnValue(): string;
-            static map(selector: string): Mapping;
-            static mapWithFilter(selector: string, filter: (value: any) => string): Mapping;
+            static map(selector: any): Mapping;
+            static mapWithFilter(selector: any, filter: (value: any) => string): Mapping;
         }
         class DisplayHTML extends Display {
             static makeComp(): DisplayHTML;
             static factory(element: JQuery, view: View<Model>, filter?: (value: any) => string): Display;
-            static map(selector: string): Mapping;
-            static mapWithFilter(selector: string, filter: (value: any) => string): Mapping;
+            static map(selector: any): Mapping;
+            static mapWithFilter(selector: any, filter: (value: any) => string): Mapping;
             setValue(value: string): void;
             getValue(): string;
         }
@@ -85,7 +85,7 @@ declare module Backbone {
             itemViews: any[];
             private ownValue;
             static factory(element: JQuery, view: View<Model>, viewClass: any, attribute?: string): List;
-            static map(selector: string, viewClass: any, attribute?: string): Mapping;
+            static map(selector: any, viewClass: any, attribute?: string): Mapping;
             getValue(): any;
             getOwnValue(): any[];
             setValue(value: any[]): void;
@@ -208,7 +208,7 @@ declare module Backbone.Components {
             static factory(element: JQuery, view: View<Model>): Select;
             private static loadOptions(model, component, optionsAttribute);
             static map(selector: any, bindings?: EventBinding[]): Mapping;
-            static mapWithOptionsFrom(selector: string, optionsAttribute: string, optionsModel: Model): Mapping;
+            static mapWithOptionsFrom(selector: any, optionsAttribute: string, optionsModel: Model): Mapping;
             getOwnValue(): any;
             setValue(value: any): void;
             getValue(): any;

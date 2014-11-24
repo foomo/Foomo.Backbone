@@ -22,7 +22,7 @@ namespace Foomo\Backbone;
 use Foomo\Modules\MakeResult;
 
 /**
- * @link www.foomo.org
+ * @link    www.foomo.org
  * @license www.gnu.org/licenses/lgpl.txt
  */
 class Module extends \Foomo\Modules\ModuleBase
@@ -30,12 +30,9 @@ class Module extends \Foomo\Modules\ModuleBase
 	//---------------------------------------------------------------------------------------------
 	// ~ Constants
 	//---------------------------------------------------------------------------------------------
-	const VERSION = '0.3.2';
-	/**
-	 * the name of this module
-	 *
-	 */
-	const NAME = 'Foomo.Backbone';
+
+	const VERSION = '0.3.3';
+	const NAME    = 'Foomo.Backbone';
 
 	//---------------------------------------------------------------------------------------------
 	// ~ Overriden static methods
@@ -69,9 +66,14 @@ class Module extends \Foomo\Modules\ModuleBase
 			\Foomo\Modules\Resource\Module::getResource('Foomo.TypeScript', '0.9.*')
 		);
 	}
+
+	/**
+	 * @param string     $target
+	 * @param MakeResult $result
+	 */
 	public static function make($target, MakeResult $result)
 	{
-		switch($target) {
+		switch ($target) {
 			case 'all':
 				Builder::buildFoomoBackboneJS();
 				$result->addEntry('foomo backbone js');

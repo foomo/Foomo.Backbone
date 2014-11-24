@@ -59,7 +59,7 @@ module Backbone {
 		 */
 		export class Mapping {
 			constructor(
-				public selector:string,
+				public selector:any,
 				public factory: (element:JQuery, view:Backbone.View<Backbone.Model>) => BaseComponent,
 				public eventBindings:Backbone.Components.EventBinding[],
 				// dear typescript i want an array of closures
@@ -282,7 +282,7 @@ module Backbone {
 			{
 				return this.getValue();
 			}
-			public static map(selector:string) {
+			public static map(selector:any) {
 				return new Mapping(
 					selector,
 					Display.factory,
@@ -291,7 +291,7 @@ module Backbone {
                     "Display component mapper"
 				);
 			}
-			public static mapWithFilter(selector:string, filter:(value:any) => string)
+			public static mapWithFilter(selector:any, filter:(value:any) => string)
 			{
 				return new Mapping(
 					selector,
@@ -312,7 +312,7 @@ module Backbone {
 			public static factory(element:JQuery, view:Backbone.View<Backbone.Model>, filter?: (value:any) => string):Display {
 				return Display.componentFactory(DisplayHTML, element, view, filter);
 			}
-			public static map(selector:string) {
+			public static map(selector:any) {
 				return new Mapping(
 					selector,
 					DisplayHTML.factory,
@@ -321,7 +321,7 @@ module Backbone {
                     "DisplayHTML component mapper"
 				);
 			}
-			public static mapWithFilter(selector:string, filter:(value:any) => string)
+			public static mapWithFilter(selector:any, filter:(value:any) => string)
 			{
 				return new Mapping(
 					selector,
@@ -366,7 +366,7 @@ module Backbone {
 				comp.viewClass = viewClass;
 				return comp;
 			}
-			public static map(selector:string,viewClass:any, attribute:string = ''):Mapping {
+			public static map(selector:any,viewClass:any, attribute:string = ''):Mapping {
 				return new Mapping(
 					selector,
 					(element:JQuery, view:Backbone.View<Backbone.Model>):List => {
