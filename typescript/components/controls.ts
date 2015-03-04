@@ -213,7 +213,7 @@ module Backbone.Components {
 					super(component);
 					var compType = component.element.prop('type');
                     var tagName = component.element.prop('tagName');
-					if(component.element && (tagName == 'INPUT' && (compType == 'text' || compType == 'password')) || tagName == 'TEXTAREA') {
+					if(component.element && (tagName == 'INPUT' && (compType == 'text' || compType == 'password' || compType == 'email' || compType == 'tel')) || tagName == 'TEXTAREA') {
 						component.element.keyup((event) => {
 							component.handleChange(component.getValue());
 						});
