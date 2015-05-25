@@ -83,9 +83,9 @@ module Backbone.Components {
                     var ret = true;
                     var feedbackAttributes = {};
                     var aborted = false;
-                    _.each(packages, (package:Package) => {
-                        var validator = package.validatorFactory();
-                        _.each(package.attributes, (attribute:string) => {
+                    _.each(packages, (pkg:Package) => {
+                        var validator = pkg.validatorFactory();
+                        _.each(pkg.attributes, (attribute:string) => {
                             if(!abort || abort && !aborted) {
                                 var result:Result = validator.validate(this.model, attribute);
                                 if(!result.valid) {
